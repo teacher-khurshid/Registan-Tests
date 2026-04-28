@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Registan Tests — Beginner Unit Test 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange:        #E84E0F;
+    --orange-light:  #FF6B35;
+    --orange-pale:   #FFF0EB;
+    --orange-dark:   #C43D0A;
+    --cream:         #FDFAF7;
+    --white:         #FFFFFF;
+    --ink:           #1C1917;
+    --ink-soft:      #44403C;
+    --muted:         #A8A29E;
+    --border:        #E7E5E4;
+    --green:         #16A34A;
+    --green-pale:    #DCFCE7;
+    --red:           #DC2626;
+    --red-pale:      #FEE2E2;
+    --blue:          #2563EB;
+    --blue-pale:     #DBEAFE;
+    --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md:     0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg:     0 10px 40px rgba(0,0,0,0.10);
+    --shadow-orange: 0 4px 20px rgba(232,78,15,0.25);
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { -webkit-text-size-adjust:100%; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased; }
+
+  .page { display:none; min-height:100vh; animation:fadeIn 0.4s ease; }
+  .page.active { display:flex; flex-direction:column; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+
+  /* ── LOGIN ── */
+  #page-login { align-items:center; justify-content:center; padding:2rem 1rem; }
+  .login-card { background:var(--white); border-radius:28px; box-shadow:var(--shadow-lg); padding:2.5rem 2rem; width:100%; max-width:420px; position:relative; overflow:hidden; }
+  .login-card::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,var(--orange),var(--orange-light)); }
+  .brand { text-align:center; margin-bottom:1.8rem; }
+  .brand-logo { width:64px; height:64px; background:linear-gradient(135deg,var(--orange),var(--orange-light)); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.8rem; box-shadow:var(--shadow-orange); font-size:1.8rem; }
+  .brand-name { font-family:'Nunito',sans-serif; font-size:1.4rem; font-weight:900; color:var(--ink); }
+  .brand-name span { color:var(--orange); }
+  .brand-sub { font-size:0.78rem; color:var(--muted); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; margin-top:0.2rem; }
+  .test-badge { background:var(--orange-pale); border:1px solid rgba(232,78,15,0.2); border-radius:12px; padding:0.8rem 1rem; margin-bottom:1.6rem; text-align:center; }
+  .test-badge .tb-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95rem; color:var(--orange-dark); }
+  .test-badge .tb-meta  { font-size:0.76rem; color:var(--orange); font-weight:600; margin-top:0.2rem; }
+  .form-group { margin-bottom:0.9rem; }
+  .form-label { display:block; font-size:0.78rem; font-weight:700; color:var(--ink-soft); margin-bottom:0.35rem; letter-spacing:0.04em; text-transform:uppercase; }
+  .form-input { width:100%; padding:0.7rem 0.9rem; border:2px solid var(--border); border-radius:12px; font-family:'Nunito Sans',sans-serif; font-size:0.93rem; color:var(--ink); background:var(--white); transition:border-color 0.2s,box-shadow 0.2s; -webkit-appearance:none; appearance:none; min-height:46px; }
+  .form-input:focus { outline:none; border-color:var(--orange); box-shadow:0 0 0 3px rgba(232,78,15,0.12); }
+  .form-input::placeholder { color:var(--muted); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
+  .pw-wrap { position:relative; }
+  .pw-wrap .form-input { padding-right:3rem; }
+  .pw-toggle { position:absolute; right:0.8rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.1rem; padding:0.25rem; -webkit-tap-highlight-color:transparent; }
+  .error-msg { background:var(--red-pale); color:var(--red); border-radius:8px; padding:0.55rem 0.8rem; font-size:0.82rem; font-weight:600; margin-bottom:0.9rem; display:none; align-items:center; gap:0.4rem; }
+  .error-msg.show { display:flex; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.93rem; padding:0.75rem 1.5rem; border-radius:999px; border:none; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; min-height:46px; }
+  .btn-primary { background:linear-gradient(135deg,var(--orange),var(--orange-light)); color:white; box-shadow:var(--shadow-orange); width:100%; font-size:0.97rem; margin-top:0.4rem; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(232,78,15,0.35); }
+  .btn-secondary { background:white; color:var(--ink); border:2px solid var(--border); }
+  .btn-secondary:hover { border-color:var(--orange); color:var(--orange); }
+
+  /* ── DASHBOARD ── */
+  .dash-header { background:linear-gradient(135deg,var(--orange-dark),var(--orange),var(--orange-light)); padding:2rem 1.5rem 3.5rem; color:white; position:relative; overflow:hidden; }
+  .dash-header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:32px; background:var(--cream); border-radius:32px 32px 0 0; }
+  .dash-header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
+  .dash-brand { font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem; }
+  .dash-welcome { font-family:'Nunito',sans-serif; font-size:1.5rem; font-weight:800; margin-bottom:0.3rem; }
+  .dash-meta { font-size:0.85rem; opacity:0.85; font-weight:500; }
+  .dash-body { padding:1.5rem; max-width:580px; margin:0 auto; margin-top:-0.5rem; }
+  .info-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:0.7rem; margin-bottom:1.4rem; }
+  .info-card { background:white; border-radius:12px; padding:0.9rem 0.6rem; text-align:center; box-shadow:var(--shadow-sm); border:1px solid var(--border); }
+  .info-card .ic-val { font-family:'Nunito',sans-serif; font-size:1.3rem; font-weight:900; color:var(--orange); line-height:1; }
+  .info-card .ic-label { font-size:0.68rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-top:0.3rem; }
+  .timer-warn { background:var(--orange-pale); border:1px solid rgba(232,78,15,0.3); border-radius:12px; padding:0.9rem 1rem; display:flex; align-items:center; gap:0.7rem; margin-bottom:1.3rem; font-size:0.86rem; font-weight:600; color:var(--orange-dark); }
+  .overview-card { background:white; border-radius:16px; padding:1.3rem; box-shadow:var(--shadow-md); margin-bottom:1.3rem; border:1px solid var(--border); }
+  .ov-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95rem; margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .sec-list { list-style:none; }
+  .sec-list li { display:flex; align-items:center; gap:0.7rem; padding:0.55rem 0; border-bottom:1px solid var(--border); font-size:0.86rem; }
+  .sec-list li:last-child { border-bottom:none; }
+  .sec-num-badge { width:24px; height:24px; background:var(--orange-pale); color:var(--orange); border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.76rem; flex-shrink:0; }
+  .sec-list .sn { flex:1; font-weight:600; color:var(--ink-soft); }
+  .sec-list .sm { font-weight:700; color:var(--muted); font-size:0.78rem; }
+
+  /* ── TEST TOPBAR ── */
+  .test-topbar { background:white; border-bottom:1px solid var(--border); padding:0.7rem 1.1rem; display:flex; align-items:center; gap:0.9rem; position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm); }
+  .tb-brand { font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem; color:var(--orange); flex-shrink:0; }
+  .tb-name { font-size:0.8rem; font-weight:600; color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .timer-pill { background:var(--orange-pale); border:1.5px solid rgba(232,78,15,0.25); border-radius:999px; padding:0.3rem 0.85rem; display:flex; align-items:center; gap:0.35rem; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.92rem; color:var(--orange); flex-shrink:0; }
+  .timer-dot { width:6px; height:6px; border-radius:50%; background:var(--orange); animation:blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1;}50%{opacity:0.2;} }
+  .timer-pill.warning { background:var(--red-pale); border-color:rgba(220,38,38,0.3); color:var(--red); animation:pulse 1s infinite; }
+  .timer-pill.warning .timer-dot { background:var(--red); }
+  @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.7;} }
+  .live-bar { background:white; border-bottom:1px solid var(--border); padding:0.45rem 1.1rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .lp { display:flex; align-items:center; gap:0.35rem; font-size:0.78rem; font-weight:700; color:var(--ink-soft); }
+  .lp-dot { width:7px; height:7px; border-radius:50%; }
+  .lp-val { font-family:'Nunito',sans-serif; font-weight:800; color:var(--ink); }
+  .test-body { padding:1rem; max-width:720px; margin:0 auto; padding-bottom:5.5rem; }
+
+  /* ── SECTION CARD ── */
+  .sc { background:white; border-radius:18px; border:1px solid var(--border); padding:1.4rem; margin-bottom:1rem; box-shadow:var(--shadow-sm); }
+  .sc-header { display:flex; align-items:flex-start; gap:0.8rem; margin-bottom:1.1rem; padding-bottom:0.9rem; border-bottom:1px solid var(--border); }
+  .sc-num { background:linear-gradient(135deg,var(--orange),var(--orange-light)); color:white; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(232,78,15,0.3); }
+  .sc-info { flex:1; }
+  .sc-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.97rem; }
+  .sc-tag { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--orange); font-weight:700; margin-top:0.1rem; }
+  .sc-marks { background:var(--orange-pale); color:var(--orange-dark); font-size:0.73rem; font-weight:700; padding:0.22rem 0.55rem; border-radius:999px; border:1px solid rgba(232,78,15,0.2); white-space:nowrap; }
+  .sc-instr { font-size:0.86rem; color:var(--muted); font-style:italic; margin-bottom:1rem; line-height:1.5; }
+
+  /* ── WORD BANK ── */
+  .word-bank { background:var(--orange-pale); border:1px dashed rgba(232,78,15,0.35); border-radius:12px; padding:0.7rem 0.9rem; margin-bottom:1.1rem; display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; }
+  .wb-label { font-size:0.75rem; font-weight:800; color:var(--orange-dark); text-transform:uppercase; letter-spacing:0.06em; width:100%; margin-bottom:0.2rem; }
+  .wb-chip { background:white; border:2px solid rgba(232,78,15,0.3); border-radius:999px; padding:0.28rem 0.75rem; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.83rem; cursor:pointer; color:var(--orange-dark); transition:all 0.15s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; min-height:34px; display:inline-flex; align-items:center; user-select:none; }
+  .wb-chip:hover { background:var(--orange); color:white; border-color:var(--orange); }
+  .wb-chip.used { opacity:0.35; pointer-events:none; text-decoration:line-through; }
+
+  /* ── CONVERSATION ── */
+  .conv { display:flex; flex-direction:column; gap:0.5rem; }
+  .conv-line { display:flex; gap:0.5rem; align-items:flex-start; font-size:0.9rem; line-height:2; flex-wrap:wrap; }
+  .spk { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.83rem; color:var(--orange); flex-shrink:0; min-width:1.3rem; padding-top:0.08rem; }
+  .conv-text { flex:1; display:flex; flex-wrap:wrap; align-items:center; gap:0.22rem; line-height:2; }
+  .q-num { font-family:'Nunito',sans-serif; font-weight:800; color:var(--orange); font-size:0.76rem; background:var(--orange-pale); border-radius:4px; padding:0 0.28rem; flex-shrink:0; }
+  .ex-ans { display:inline-flex; align-items:center; background:var(--blue-pale); border:1.5px solid var(--blue); color:var(--blue); font-family:'Nunito',sans-serif; font-weight:700; font-size:0.83rem; padding:0.18rem 0.65rem; border-radius:999px; }
+
+  /* ── WORD BANK SLOT ── */
+  .wb-slot { display:inline-flex; align-items:center; justify-content:center; min-width:70px; min-height:28px; border:none; border-bottom:2px solid var(--orange); background:transparent; padding:0 0.3rem; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.83rem; color:var(--orange-dark); cursor:pointer; transition:all 0.2s; border-radius:0; vertical-align:middle; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  .wb-slot::after { content:'_ _ _'; color:var(--muted); font-weight:400; font-size:0.78rem; letter-spacing:0.05em; }
+  .wb-slot.filled::after { content:''; }
+  .wb-slot.filled { color:var(--orange-dark); font-weight:700; }
+  .wb-slot.correct { color:var(--green); border-bottom:2px solid var(--green); cursor:default; }
+  .wb-slot.correct::after { content:''; }
+  .wb-slot.wrong { color:var(--red); border-bottom:2px solid var(--red); cursor:default; }
+  .wb-slot.wrong::after { content:''; }
+
+  /* ── DROPDOWN ── */
+  .dd-item { margin-bottom:0.9rem; display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; }
+  .dd-num { font-family:'Nunito',sans-serif; font-weight:800; color:var(--orange); font-size:0.83rem; min-width:1.6rem; }
+  .dd-context { font-size:0.9rem; color:var(--ink-soft); }
+  .dd-select { border:2px solid var(--border); border-radius:10px; background:white; font-family:'Nunito Sans',sans-serif; font-size:0.9rem; color:var(--ink); padding:0.3rem 0.7rem; outline:none; transition:all 0.2s; min-height:36px; cursor:pointer; }
+  .dd-select:focus { border-color:var(--orange); }
+  .dd-select.correct { border-color:var(--green); background:var(--green-pale); color:var(--green); font-weight:700; }
+  .dd-select.wrong   { border-color:var(--red);   background:var(--red-pale);   color:var(--red); }
+  .dd-select:disabled { cursor:default; }
+
+  /* ── TEXT INPUT ── */
+  .ti-item { margin-bottom:0.85rem; display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; }
+  .ti-num { font-family:'Nunito',sans-serif; font-weight:800; color:var(--orange); font-size:0.83rem; min-width:1.3rem; }
+  .ti-hint { font-family:'Nunito',sans-serif; font-size:0.9rem; font-weight:700; color:var(--muted); letter-spacing:0.1em; }
+  .ti-input { border:none; border-bottom:2.5px solid var(--orange); background:transparent; font-family:'Nunito Sans',sans-serif; font-size:0.9rem; color:var(--ink); padding:0.1rem 0.4rem; min-width:160px; outline:none; transition:all 0.2s; -webkit-appearance:none; appearance:none; min-height:34px; }
+  .ti-input:focus { border-color:var(--blue); background:var(--blue-pale); border-radius:6px; }
+  .ti-input.correct { border-color:var(--green); background:var(--green-pale); color:var(--green); border-radius:6px; font-weight:700; }
+  .ti-input.wrong   { border-color:var(--red);   background:var(--red-pale);   color:var(--red);   border-radius:6px; }
+  .ti-input:disabled { cursor:default; }
+  .ti-reveal { font-size:0.77rem; color:var(--green); font-weight:700; display:none; margin-left:0.5rem; }
+  .ti-reveal.show { display:inline; }
+
+  /* ── WORD ORDER BUILDER ── */
+  .wo-item { margin-bottom:1.2rem; padding-bottom:1.1rem; border-bottom:1px solid var(--border); }
+  .wo-item:last-child { border-bottom:none; margin-bottom:0; }
+  .wo-label { font-size:0.76rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
+  .wo-answer-area { min-height:46px; border:2px dashed var(--orange); border-radius:12px; padding:0.5rem 0.7rem; display:flex; flex-wrap:wrap; gap:0.35rem; align-items:center; background:var(--orange-pale); margin-bottom:0.5rem; cursor:pointer; transition:background 0.2s; }
+  .wo-answer-area .wo-placeholder { font-size:0.78rem; color:var(--orange); font-style:italic; opacity:0.7; pointer-events:none; font-weight:600; }
+  .wo-answer-area.correct-area { border-color:var(--green); background:var(--green-pale); }
+  .wo-answer-area.wrong-area   { border-color:var(--red);   background:var(--red-pale); }
+  .wo-pool { display:flex; flex-wrap:wrap; gap:0.35rem; min-height:30px; }
+  .wo-word { background:white; border:2px solid var(--border); border-radius:8px; padding:0.25rem 0.65rem; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.15s; color:var(--ink); -webkit-tap-highlight-color:transparent; touch-action:manipulation; min-height:36px; display:inline-flex; align-items:center; user-select:none; }
+  .wo-word:hover { border-color:var(--orange); background:var(--orange-pale); color:var(--orange-dark); }
+  .wo-word.placed { background:var(--orange); border-color:var(--orange-dark); color:white; }
+  .wo-word.placed:hover { background:var(--orange-dark); }
+  .wo-word.correct-w { background:var(--green); border-color:var(--green); color:white; cursor:default; }
+  .wo-word.wrong-w   { background:var(--red);   border-color:var(--red);   color:white; cursor:default; }
+  .wo-reveal { font-size:0.77rem; color:var(--green); font-weight:700; display:none; margin-top:0.25rem; }
+  .wo-reveal.show { display:block; }
+
+  /* ── PARAGRAPH FILL (Ex5) ── */
+  .para-fill { font-size:0.92rem; line-height:2.4; color:var(--ink-soft); }
+
+  /* ── SUBMIT BAR ── */
+  .submit-bar { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid var(--border); padding:0.85rem 1.1rem; display:flex; gap:0.7rem; justify-content:center; box-shadow:0 -4px 20px rgba(0,0,0,0.07); z-index:100; }
+  .submit-bar .btn { min-width:130px; }
+  @supports (-webkit-touch-callout:none) {
+    .submit-bar { padding-bottom:calc(0.85rem + env(safe-area-inset-bottom)); }
+    #page-login  { padding-bottom:calc(2rem + env(safe-area-inset-bottom)); }
+  }
+
+  /* ── RESULT ── */
+  #page-result { align-items:center; justify-content:flex-start; padding:2rem 1rem 4rem; }
+  .result-card { background:white; border-radius:28px; box-shadow:var(--shadow-lg); padding:2.3rem 1.8rem; width:100%; max-width:500px; margin:0 auto; text-align:center; }
+  .res-emoji { font-size:3.2rem; margin-bottom:0.4rem; }
+  .res-label { font-family:'Nunito',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+  .res-score { font-family:'Nunito',sans-serif; font-size:3.8rem; font-weight:900; color:var(--orange); line-height:1; margin:0.3rem 0; letter-spacing:-0.03em; }
+  .res-max { font-size:1.4rem; color:var(--muted); font-weight:700; }
+  .res-pct { font-family:'Nunito',sans-serif; font-size:1.1rem; font-weight:800; margin:0.4rem 0; }
+  .res-status { display:inline-block; padding:0.3rem 1.1rem; border-radius:999px; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.88rem; letter-spacing:0.05em; margin:0.4rem 0 0.9rem; }
+  .res-status.pass { background:var(--green-pale); color:var(--green); }
+  .res-status.fail { background:var(--red-pale);   color:var(--red); }
+  .res-msg { font-size:0.88rem; color:var(--ink-soft); margin-bottom:1.3rem; line-height:1.6; }
+  .res-stu { background:var(--orange-pale); border-radius:10px; padding:0.75rem 0.9rem; text-align:left; margin-bottom:1.1rem; font-size:0.83rem; }
+  .res-stu p { margin-bottom:0.2rem; color:var(--ink-soft); }
+  .res-stu strong { color:var(--orange-dark); font-weight:700; }
+  .res-divider { border:none; border-top:1px solid var(--border); margin:1rem 0; }
+  .bd-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.7rem; text-align:left; }
+  .bd-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:0.55rem; margin-bottom:1.3rem; }
+  .bd-cell { background:var(--cream); border-radius:10px; padding:0.65rem 0.5rem; text-align:center; border:1px solid var(--border); }
+  .bd-cell .bdc-s { font-family:'Nunito',sans-serif; font-size:1rem; font-weight:900; color:var(--orange); }
+  .bd-cell .bdc-n { font-size:0.68rem; color:var(--muted); font-weight:600; margin-top:0.2rem; line-height:1.3; }
+  .res-actions { display:flex; gap:0.7rem; flex-wrap:wrap; justify-content:center; }
+
+  /* ── MODALS ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:200; display:none; align-items:center; justify-content:center; padding:1rem; }
+  .modal-overlay.show { display:flex; }
+  .modal { background:white; border-radius:24px; padding:1.8rem; max-width:360px; width:100%; box-shadow:var(--shadow-lg); text-align:center; }
+  .modal-icon { font-size:2.3rem; margin-bottom:0.6rem; }
+  .modal-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:1.1rem; margin-bottom:0.4rem; }
+  .modal-msg { font-size:0.85rem; color:var(--muted); margin-bottom:1.3rem; line-height:1.6; }
+  .modal-actions { display:flex; gap:0.7rem; justify-content:center; }
+
+  @media(max-width:480px) {
+    .form-row { grid-template-columns:1fr; }
+    .info-cards { gap:0.45rem; }
+    .info-card { padding:0.65rem 0.35rem; }
+    .info-card .ic-val { font-size:1.1rem; }
+    .res-score { font-size:3rem; }
+    .sc { padding:1.1rem; }
+  }
+  @media print {
+    .submit-bar,.test-topbar,.live-bar { display:none !important; }
+    .test-body { padding-bottom:0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-incomplete">
+  <div class="modal">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">Unanswered Questions!</div>
+    <div class="modal-msg">You have <strong id="unanswered-count">0</strong> unanswered questions. Submit anyway?</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-incomplete')">Go Back</button>
+      <button class="btn btn-primary" onclick="confirmSubmit()">Submit Anyway</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-timeout">
+  <div class="modal">
+    <div class="modal-icon">⏰</div>
+    <div class="modal-title">Time's Up!</div>
+    <div class="modal-msg">Your time has run out. Answers submitted automatically.</div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeModal('modal-timeout');showResult();">See Results</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1 — LOGIN -->
+<div id="page-login" class="page active">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-logo">📝</div>
+      <div class="brand-name">Registan <span>Tests</span></div>
+      <div class="brand-sub">Interactive Assessment</div>
+    </div>
+    <div class="test-badge">
+      <div class="tb-title">ROADMAP A1 · Beginner Unit Test 3</div>
+      <div class="tb-meta">Beginner · Unit Tests · 50 marks · 25 minutes</div>
+    </div>
+    <div class="error-msg" id="login-error"><span>🔒</span><span id="login-err-txt">Incorrect password.</span></div>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" type="text" id="inp-name" placeholder="e.g. Aisha Karimova" autocomplete="name"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Group</label>
+        <input class="form-input" type="text" id="inp-group" placeholder="e.g. Group 3"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Teacher</label>
+        <input class="form-input" type="text" id="inp-teacher" placeholder="e.g. Mr. Khurshid"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="inp-pw" placeholder="Enter test password"/>
+        <button class="pw-toggle" onclick="togglePw()" type="button">👁️</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="handleLogin()">Start Test →</button>
+  </div>
+</div>
+
+<!-- PAGE 2 — DASHBOARD -->
+<div id="page-dashboard" class="page">
+  <div class="dash-header">
+    <div class="dash-header-top">
+      <div class="dash-brand">📝 Registan Tests</div>
+      <button class="btn" style="color:rgba(255,255,255,0.8);font-size:0.78rem;background:rgba(255,255,255,0.15);padding:0.4rem 0.9rem;min-height:36px;" onclick="showPage('page-login')">← Back</button>
+    </div>
+    <div class="dash-welcome">Welcome, <span id="dash-name">Student</span>! 👋</div>
+    <div class="dash-meta" id="dash-meta"></div>
+  </div>
+  <div class="dash-body">
+    <div class="info-cards">
+      <div class="info-card"><div class="ic-val">50</div><div class="ic-label">Marks</div></div>
+      <div class="info-card"><div class="ic-val">7</div><div class="ic-label">Sections</div></div>
+      <div class="info-card"><div class="ic-val">25m</div><div class="ic-label">Time</div></div>
+    </div>
+    <div class="timer-warn"><span style="font-size:1.3rem">⏱️</span><div>Timer starts when you click <strong>Begin Test</strong>. You cannot pause.</div></div>
+    <div class="overview-card">
+      <div class="ov-title">📋 Test Overview</div>
+      <ul class="sec-list">
+        <li><div class="sec-num-badge">1</div><span class="sn">Complete with is, are, isn't or aren't</span><span class="sm">5 marks</span></li>
+        <li><div class="sec-num-badge">2</div><span class="sn">Complete the conversations</span><span class="sm">9 marks</span></li>
+        <li><div class="sec-num-badge">3</div><span class="sn">Put words in correct order</span><span class="sm">6 marks</span></li>
+        <li><div class="sec-num-badge">4</div><span class="sn">Complete the place words</span><span class="sm">9 marks</span></li>
+        <li><div class="sec-num-badge">5</div><span class="sn">Complete the text (word box)</span><span class="sm">7 marks</span></li>
+        <li><div class="sec-num-badge">6</div><span class="sn">Complete with correct adjective</span><span class="sm">4 marks</span></li>
+        <li><div class="sec-num-badge">7</div><span class="sn">Directions conversation (word box)</span><span class="sm">10 marks</span></li>
+      </ul>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="beginTest()">Begin Test →</button>
+  </div>
+</div>
+
+<!-- PAGE 3 — TEST -->
+<div id="page-test" class="page">
+  <div class="test-topbar">
+    <div class="tb-brand">Registan</div>
+    <div class="tb-name">Beginner Unit Test 3</div>
+    <div class="timer-pill" id="timer-pill">
+      <div class="timer-dot"></div>
+      <span id="timer-display">25:00</span>
+    </div>
+  </div>
+  <div class="live-bar">
+    <div class="lp"><span class="lp-dot" style="background:var(--orange)"></span>Score: <span class="lp-val" id="live-score">0/50</span></div>
+    <div class="lp"><span class="lp-dot" style="background:var(--green)"></span>Correct: <span class="lp-val" id="live-correct">0</span></div>
+    <div class="lp"><span class="lp-dot" style="background:var(--red)"></span>Wrong: <span class="lp-val" id="live-wrong">0</span></div>
+  </div>
+  <div class="test-body">
+
+    <!-- SECTION 1 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">1</div>
+        <div class="sc-info"><div class="sc-title">Complete with is, are, isn't or aren't</div><div class="sc-tag">Grammar · Dropdown</div></div>
+        <div class="sc-marks">/ 5 marks</div>
+      </div>
+      <p class="sc-instr">Choose the correct form to complete each sentence.</p>
+      <div id="sec1-container"></div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">2</div>
+        <div class="sc-info"><div class="sc-title">Complete the conversations</div><div class="sc-tag">Grammar · Word Bank</div></div>
+        <div class="sc-marks">/ 9 marks</div>
+      </div>
+      <p class="sc-instr">Tap a word from the box, then tap the blank where it goes.</p>
+      <div class="word-bank" id="sec2-bank"><div class="wb-label">Word Bank</div></div>
+      <div class="conv" id="sec2-conv"></div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">3</div>
+        <div class="sc-info"><div class="sc-title">Put words in the correct order</div><div class="sc-tag">Grammar · Word Order</div></div>
+        <div class="sc-marks">/ 6 marks</div>
+      </div>
+      <p class="sc-instr">Tap the word chips in the correct order to make sentences. Tap a placed word to return it.</p>
+      <div id="sec3-container"></div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">4</div>
+        <div class="sc-info"><div class="sc-title">Complete the place words</div><div class="sc-tag">Vocabulary · Text Input</div></div>
+        <div class="sc-marks">/ 9 marks</div>
+      </div>
+      <p class="sc-instr">Type the complete word. The missing letters are shown as underscores.</p>
+      <div id="sec4-container"></div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">5</div>
+        <div class="sc-info"><div class="sc-title">Complete the text</div><div class="sc-tag">Vocabulary · Word Bank</div></div>
+        <div class="sc-marks">/ 7 marks</div>
+      </div>
+      <p class="sc-instr">Tap a word from the box, then tap the blank where it goes.</p>
+      <div class="word-bank" id="sec5-bank"><div class="wb-label">Word Bank</div></div>
+      <div class="para-fill" id="sec5-para"></div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">6</div>
+        <div class="sc-info"><div class="sc-title">Complete with the correct adjective</div><div class="sc-tag">Vocabulary · Text Input</div></div>
+        <div class="sc-marks">/ 4 marks</div>
+      </div>
+      <p class="sc-instr">Type the missing adjective. The first letter is given as a hint.</p>
+      <div id="sec6-container"></div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="sc">
+      <div class="sc-header">
+        <div class="sc-num">7</div>
+        <div class="sc-info"><div class="sc-title">Asking and giving directions</div><div class="sc-tag">Function · Word Bank</div></div>
+        <div class="sc-marks">/ 10 marks</div>
+      </div>
+      <p class="sc-instr">Tap a word from the box, then tap the blank where it goes.</p>
+      <div class="word-bank" id="sec7-bank"><div class="wb-label">Word Bank</div></div>
+      <div class="conv" id="sec7-conv"></div>
+    </div>
+
+  </div>
+  <div class="submit-bar">
+    <button class="btn btn-secondary" onclick="confirmReset()">↺ Reset</button>
+    <button class="btn btn-primary" onclick="handleSubmit()">Check & Submit →</button>
+  </div>
+</div>
+
+<!-- PAGE 4 — RESULT -->
+<div id="page-result" class="page">
+  <div class="result-card">
+    <div class="res-emoji" id="res-emoji">🏆</div>
+    <div class="res-label">Your Score</div>
+    <div class="res-score"><span id="res-score-num">0</span><span class="res-max">/50</span></div>
+    <div class="res-pct" id="res-pct"></div>
+    <div class="res-status" id="res-status"></div>
+    <div class="res-msg" id="res-msg"></div>
+    <div class="res-stu" id="res-stu"></div>
+    <hr class="res-divider">
+    <div class="bd-title">Section Breakdown</div>
+    <div class="bd-grid" id="bd-grid"></div>
+    <hr class="res-divider">
+    <div class="res-actions">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+      <button class="btn btn-primary" onclick="reviewMistakes()">🔍 Review Mistakes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const CFG = {
+  testName: 'Beginner Unit Test 3',
+  maxScore: 50,
+  timeMin:  25,
+  password: 'beg2024',
+  sections: [
+    { key:'s1', title:'is/are/isn\'t/aren\'t', marks:5  },
+    { key:'s2', title:'Complete convos',        marks:9  },
+    { key:'s3', title:'Word order',             marks:6  },
+    { key:'s4', title:'Place words',            marks:9  },
+    { key:'s5', title:'Complete text',          marks:7  },
+    { key:'s6', title:'Adjectives',             marks:4  },
+    { key:'s7', title:'Directions',             marks:10 },
+  ]
+};
+
+let student={}, timerInt=null, secLeft=CFG.timeMin*60, scores={}, submitted=false;
+
+// ═══════════════════════════════════════
+// PAGE / MODAL NAV
+// ═══════════════════════════════════════
+function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+// ═══════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════
+function togglePw(){ const i=document.getElementById('inp-pw'); i.type=i.type==='password'?'text':'password'; }
+function handleLogin(){
+  const name=document.getElementById('inp-name').value.trim(),
+        group=document.getElementById('inp-group').value.trim(),
+        teacher=document.getElementById('inp-teacher').value.trim(),
+        pw=document.getElementById('inp-pw').value.trim();
+  const errEl=document.getElementById('login-error'), errTxt=document.getElementById('login-err-txt');
+  if(!name||!group||!teacher||!pw){ errTxt.textContent='Please fill in all fields.'; errEl.classList.add('show'); return; }
+  if(pw!==CFG.password){ errTxt.textContent='Incorrect password. Please try again.'; errEl.classList.add('show'); document.getElementById('inp-pw').value=''; return; }
+  errEl.classList.remove('show');
+  student={name,group,teacher};
+  document.getElementById('dash-name').textContent=name.split(' ')[0];
+  document.getElementById('dash-meta').textContent=`${group} · ${teacher}`;
+  showPage('page-dashboard');
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&document.getElementById('page-login').classList.contains('active')) handleLogin(); });
+function beginTest(){ showPage('page-test'); startTimer(); }
+
+// ═══════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════
+function startTimer(){
+  secLeft=CFG.timeMin*60; updateTimer();
+  timerInt=setInterval(()=>{ secLeft--; updateTimer(); if(secLeft<=0){ clearInterval(timerInt); checkAll(); openModal('modal-timeout'); } },1000);
+}
+function updateTimer(){
+  const m=Math.floor(secLeft/60),s=secLeft%60;
+  document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(secLeft<=300) document.getElementById('timer-pill').classList.add('warning');
+}
+function getTimeTaken(){ const e=CFG.timeMin*60-secLeft; return `${Math.floor(e/60)}m ${e%60}s`; }
+
+// ═══════════════════════════════════════
+// SECTION 1 — DROPDOWN
+// ═══════════════════════════════════════
+const sec1Data = [
+  { id:'s1_1', before:'No, there ', after:' a shop in the town.',  answer:"isn't" },
+  { id:'s1_2', before:'There ',     after:' no pens in the bag.',  answer:'are'   },
+  { id:'s1_3', before:'There ',     after:' any cups.',            answer:"aren't"},
+  { id:'s1_4', before:'There ',     after:' one book here.',       answer:'is'    },
+  { id:'s1_5', before:'No, there ', after:' a phone in the room.', answer:"isn't" },
+  { id:'s1_6', before:'Yes, there ',after:' three girls in the class.', answer:'are' },
+];
+// Note: item 1 is the example (given), items 2-6 are scored = 5 marks
+const s1State={};
+function buildSec1(){
+  const cont=document.getElementById('sec1-container'); cont.innerHTML='';
+  sec1Data.forEach((q,i)=>{
+    const div=document.createElement('div'); div.className='dd-item';
+    const nm=document.createElement('span'); nm.className='dd-num'; nm.textContent=(i+1)+'.';
+    div.appendChild(nm);
+    const wrap=document.createElement('span'); wrap.style.fontSize='0.9rem'; wrap.style.display='flex'; wrap.style.alignItems='center'; wrap.style.flexWrap='wrap'; wrap.style.gap='0.3rem';
+    if(q.before) wrap.appendChild(document.createTextNode(q.before));
+    if(i===0){
+      // example — given
+      const ex=document.createElement('span'); ex.className='ex-ans'; ex.textContent=q.answer; wrap.appendChild(ex);
+    } else {
+      const sel=document.createElement('select'); sel.className='dd-select'; sel.id='dd1-'+q.id;
+      ['—','is','are',"isn't","aren't"].forEach(opt=>{ const o=document.createElement('option'); o.value=opt==='—'?'':opt; o.textContent=opt; sel.appendChild(o); });
+      sel.addEventListener('change',()=>{ s1State[q.id]=sel.value; });
+      s1State[q.id]='';
+      wrap.appendChild(sel);
+    }
+    if(q.after) wrap.appendChild(document.createTextNode(q.after));
+    div.appendChild(wrap); cont.appendChild(div);
+  });
+}
+function checkSec1(){
+  let score=0;
+  sec1Data.forEach((q,i)=>{
+    if(i===0) return; // example
+    const sel=document.getElementById('dd1-'+q.id); if(!sel) return;
+    const ok=(s1State[q.id]||'')=== q.answer;
+    sel.classList.add(ok?'correct':'wrong'); sel.disabled=true; if(ok) score++;
+  });
+  return score;
+}
+function resetSec1(){ Object.keys(s1State).forEach(k=>s1State[k]=''); buildSec1(); }
+
+// ═══════════════════════════════════════
+// SECTION 2 — WORD BANK TAP
+// ═══════════════════════════════════════
+const sec2Bank=['Is','there','any','aren\'t','are not','many','are','a','isn\'t','is not','Are','No'];
+// answers: 1=Is, 2=there, 3=any, 4=aren't/are not, 5=many, 6=are, 7=a, 8=isn't/is not, 9=Are, 10=No
+const sec2Data=[
+  { id:'s2l1', speaker:'A', parts:[{s:'s2_1',a:'Is'   },{t:' there wifi in the flat?'}] },
+  { id:'s2l2', speaker:'B', parts:[{t:'Yes, '},{s:'s2_2',a:'there'},{t:' is.'}] },
+  { id:'s2l3', speaker:'A', parts:[{t:'Are there '},{s:'s2_3',a:'any'},{t:' chairs in the room?'}] },
+  { id:'s2l4', speaker:'B', parts:[{t:'No, there '},{s:'s2_4',a:"aren't"},{t:'.'}] },
+  { id:'s2l5', speaker:'A', parts:[{t:'How '},{s:'s2_5',a:'many'},{t:' rooms are there?'}] },
+  { id:'s2l6', speaker:'B', parts:[{t:'There '},{s:'s2_6',a:'are'},{t:' five rooms.'}] },
+  { id:'s2l7', speaker:'A', parts:[{t:'Is there '},{s:'s2_7',a:'a'},{t:' TV?'}] },
+  { id:'s2l8', speaker:'B', parts:[{t:'No, there '},{s:'s2_8',a:"isn't"},{t:'.'}] },
+  { id:'s2l9', speaker:'A', parts:[{s:'s2_9',a:'Are'},{t:' there any boxes?'}] },
+  { id:'s2l10',speaker:'B', parts:[{s:'s2_10',a:'No'},{t:", there aren't."}] },
+];
+let s2SelChip=null; const s2State={};
+function buildSec2(){
+  buildWBSection('sec2-bank',sec2Bank,'s2',s2State);
+  const cont=document.getElementById('sec2-conv'); cont.innerHTML='';
+  let qNum=0;
+  sec2Data.forEach(q=>{
+    const hasSlot=q.parts.some(p=>p.s); if(hasSlot) qNum++;
+    const line=document.createElement('div'); line.className='conv-line';
+    const spk=document.createElement('span'); spk.className='spk'; spk.textContent=q.speaker+':'; line.appendChild(spk);
+    if(hasSlot){ const nm=document.createElement('span'); nm.className='q-num'; nm.textContent=qNum; line.appendChild(nm); }
+    else { const sp=document.createElement('span'); sp.style.minWidth='1.3rem'; line.appendChild(sp); }
+    const txt=document.createElement('span'); txt.className='conv-text';
+    q.parts.forEach(part=>{
+      if(part.t!==undefined) txt.appendChild(document.createTextNode(part.t));
+      else if(part.s!==undefined){ const slot=mkSlot(part.s,part.a,'s2',s2State); txt.appendChild(slot); s2State[part.s]=null; }
+    });
+    line.appendChild(txt); cont.appendChild(line);
+  });
+}
+function checkSec2(){
+  let score=0;
+  Object.entries(s2State).forEach(([k,filled])=>{
+    const slot=document.getElementById('slot-'+k); if(!slot) return;
+    const ans=slot.dataset.answer;
+    // accept both contracted and full form
+    const ok=filled&&(filled.toLowerCase()===ans.toLowerCase()||(ans==="aren't"&&filled==="are not")||(ans==="isn't"&&filled==="is not"));
+    slot.classList.remove('filled');
+    if(ok){slot.classList.add('correct');score++;}
+    else{slot.classList.add('wrong');slot.textContent=filled?filled+' ✗':'?';}
+    slot.disabled=true;
+  });
+  return score;
+}
+function resetSec2(){ Object.keys(s2State).forEach(k=>s2State[k]=null); s2SelChip=null; buildSec2(); }
+
+// ═══════════════════════════════════════
+// SECTION 3 — WORD ORDER BUILDER
+// ═══════════════════════════════════════
+// Item 1 is example (given). Items 2-7 scored = 6 marks
+const sec3Data=[
+  { id:'wo1', words:['This','town','is','big'],                    answer:'This town is big.',           given:true },
+  { id:'wo2', words:['The','bag','isn\'t','expensive'],            answer:'The bag isn\'t expensive.'           },
+  { id:'wo3', words:['This','is','an','old','computer'],           answer:'This is an old computer.'            },
+  { id:'wo4', words:['It\'s','not','a','good','phone'],            answer:'It\'s not a good phone.'             },
+  { id:'wo5', words:['There','is','one','big','supermarket'],      answer:'There is one big supermarket.'       },
+  { id:'wo6', words:['There','are','new','desks','and','chairs'],  answer:'There are new desks and chairs.'     },
+  { id:'wo7', words:['Are','there','any','good','cafés','in','your','town'], answer:'Are there any good cafés in your town?' },
+];
+const wo3State={};
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function buildSec3(){
+  const cont=document.getElementById('sec3-container'); cont.innerHTML='';
+  sec3Data.forEach((q,qi)=>{
+    if(q.given){
+      const div=document.createElement('div'); div.className='wo-item';
+      const lbl=document.createElement('div'); lbl.className='wo-label';
+      lbl.innerHTML=`<span class="q-num" style="font-size:0.83rem">1.</span> Example:`;
+      div.appendChild(lbl);
+      const ex=document.createElement('div');
+      ex.style.cssText='font-size:0.9rem;color:var(--ink-soft);padding:0.4rem 0.7rem;background:var(--blue-pale);border-radius:8px;border:1.5px solid var(--blue);font-weight:600;';
+      ex.textContent=q.answer; div.appendChild(ex); cont.appendChild(div); return;
+    }
+    wo3State[q.id]={placed:[],pool:shuffle(q.words.map((w,i)=>({w,i})))};
+    const div=document.createElement('div'); div.className='wo-item';
+    const lbl=document.createElement('div'); lbl.className='wo-label';
+    lbl.innerHTML=`<span class="q-num" style="font-size:0.83rem">${qi+1}.</span> Tap words to build the sentence:`;
+    div.appendChild(lbl);
+    const area=document.createElement('div'); area.className='wo-answer-area'; area.id='wo-area-'+q.id;
+    area.innerHTML='<span class="wo-placeholder">Tap words below…</span>'; div.appendChild(area);
+    const reveal=document.createElement('div'); reveal.className='wo-reveal'; reveal.id='wo-reveal-'+q.id;
+    reveal.innerHTML='✓ Correct: <strong>'+q.answer+'</strong>'; div.appendChild(reveal);
+    const pool=document.createElement('div'); pool.className='wo-pool'; pool.id='wo-pool-'+q.id;
+    wo3State[q.id].pool.forEach(item=>{
+      const btn=document.createElement('button'); btn.className='wo-word'; btn.textContent=item.w;
+      btn.id='wo-w-'+q.id+'-'+item.i; btn.dataset.qid=q.id; btn.dataset.idx=item.i;
+      btn.addEventListener('click',()=>tapWoWord(btn)); pool.appendChild(btn);
+    });
+    div.appendChild(pool); cont.appendChild(div);
+  });
+}
+function tapWoWord(btn){
+  const qid=btn.dataset.qid; if(btn.disabled) return;
+  wo3State[qid].placed.push({w:btn.textContent,btnId:btn.id});
+  btn.classList.add('placed'); btn.disabled=true; renderWoArea(qid);
+}
+function tapWoArea(qid,btnId){
+  wo3State[qid].placed=wo3State[qid].placed.filter(p=>p.btnId!==btnId);
+  const btn=document.getElementById(btnId); if(btn){btn.classList.remove('placed');btn.disabled=false;}
+  renderWoArea(qid);
+}
+function renderWoArea(qid){
+  const state=wo3State[qid], area=document.getElementById('wo-area-'+qid); area.innerHTML='';
+  if(state.placed.length===0){area.innerHTML='<span class="wo-placeholder">Tap words below…</span>';return;}
+  state.placed.forEach(p=>{
+    const btn=document.createElement('button'); btn.className='wo-word placed'; btn.textContent=p.w;
+    btn.addEventListener('click',()=>tapWoArea(qid,p.btnId)); area.appendChild(btn);
+  });
+}
+function normalise(str){ return str.toLowerCase().replace(/[?.!]/g,'').replace(/\s+/g,' ').trim(); }
+function checkSec3(){
+  let score=0;
+  sec3Data.forEach(q=>{
+    if(q.given) return;
+    const state=wo3State[q.id]; if(!state) return;
+    const user=state.placed.map(p=>p.w).join(' ');
+    const ok=normalise(user)===normalise(q.answer);
+    const area=document.getElementById('wo-area-'+q.id);
+    area.querySelectorAll('.wo-word').forEach(b=>{ b.className='wo-word '+(ok?'correct-w':'wrong-w'); b.disabled=true; });
+    document.getElementById('wo-pool-'+q.id).querySelectorAll('.wo-word').forEach(b=>b.disabled=true);
+    area.className='wo-answer-area '+(ok?'correct-area':'wrong-area');
+    if(!ok) document.getElementById('wo-reveal-'+q.id).classList.add('show');
+    if(ok) score++;
+  });
+  return score;
+}
+function resetSec3(){ buildSec3(); }
+
+// ═══════════════════════════════════════
+// SECTION 4 — TEXT INPUT (place words)
+// ═══════════════════════════════════════
+// Item 1 given. Items 2-10 scored = 9 marks
+const sec4Data=[
+  { id:'s4_1',  hint:'f l a t',                      answer:'flat',         given:true },
+  { id:'s4_2',  hint:'b _ _ k _ h _ p',              answer:'bookshop'              },
+  { id:'s4_3',  hint:'r _ _ t _ u _ _ _ t',          answer:'restaurant'            },
+  { id:'s4_4',  hint:'t _ _ _ n s _ _ t i _ n',      answer:'train station'         },
+  { id:'s4_5',  hint:'_ i _ _ m a',                  answer:'cinema'                },
+  { id:'s4_6',  hint:'h _ _ _ e',                    answer:'house'                 },
+  { id:'s4_7',  hint:'p _ _ k',                      answer:'park'                  },
+  { id:'s4_8',  hint:'_ _ n k',                      answer:'bank'                  },
+  { id:'s4_9',  hint:'m a _ k _ _',                  answer:'market'                },
+  { id:'s4_10', hint:'h _ _ _ l',                    answer:'hotel'                 },
+];
+const s4State={};
+function buildSec4(){
+  const cont=document.getElementById('sec4-container'); cont.innerHTML='';
+  sec4Data.forEach((q,i)=>{
+    const div=document.createElement('div'); div.className='ti-item';
+    const nm=document.createElement('span'); nm.className='ti-num'; nm.textContent=(i+1)+'.';
+    const hint=document.createElement('span'); hint.className='ti-hint'; hint.textContent=q.hint;
+    div.appendChild(nm); div.appendChild(hint);
+    if(q.given){
+      const ex=document.createElement('span'); ex.className='ex-ans'; ex.textContent=q.answer;
+      div.appendChild(ex);
+    } else {
+      const inp=document.createElement('input'); inp.className='ti-input'; inp.id='ti4-'+q.id;
+      inp.placeholder='type word…'; inp.autocomplete='off'; inp.spellcheck=false;
+      inp.addEventListener('input',()=>{ s4State[q.id]=inp.value; }); s4State[q.id]='';
+      div.appendChild(inp);
+    }
+    cont.appendChild(div);
+  });
+}
+function checkSec4(){
+  let score=0;
+  sec4Data.forEach(q=>{
+    if(q.given) return;
+    const inp=document.getElementById('ti4-'+q.id); if(!inp) return;
+    const ok=(s4State[q.id]||'').trim().toLowerCase()===q.answer.toLowerCase();
+    inp.classList.add(ok?'correct':'wrong'); inp.disabled=true;
+    if(!ok){ const rv=document.createElement('span'); rv.className='ti-reveal show'; rv.textContent='✓ '+q.answer; inp.parentNode.insertBefore(rv,inp.nextSibling); }
+    if(ok) score++;
+  });
+  return score;
+}
+function resetSec4(){ Object.keys(s4State).forEach(k=>s4State[k]=''); buildSec4(); }
+
+// ═══════════════════════════════════════
+// SECTION 5 — WORD BANK PARAGRAPH FILL
+// ═══════════════════════════════════════
+const sec5Bank=['bathroom','bedroom','cheap','kitchen','small','toilet','TV','wifi'];
+// answer key: 1=small,2=cheap,3=bedroom,4=TV,5=kitchen,6=bathroom,7=toilet,8=wifi
+const sec5Slots=[
+  {s:'s5_1',a:'small'},{s:'s5_2',a:'cheap'},{s:'s5_3',a:'bedroom'},
+  {s:'s5_4',a:'TV'},{s:'s5_5',a:'kitchen'},{s:'s5_6',a:'bathroom'},
+  {s:'s5_7',a:'toilet'},{s:'s5_8',a:'wifi'}
+];
+let s5SelChip=null; const s5State={};
+function buildSec5(){
+  buildWBSection('sec5-bank',sec5Bank,'s5',s5State);
+  sec5Slots.forEach(sl=>{ s5State[sl.s]=null; });
+  const para=document.getElementById('sec5-para'); para.innerHTML='';
+  // Build paragraph with inline slots
+  const segments=[
+    {t:"My flat is "},
+    {s:'s5_1',a:'small',num:1},
+    {t:", but it isn't expensive, it's "},
+    {s:'s5_2',a:'cheap',num:2},
+    {t:". There is one "},
+    {s:'s5_3',a:'bedroom',num:3},
+    {t:" with my bed, and there is a nice living room with a "},
+    {s:'s5_4',a:'TV',num:4},
+    {t:". In the "},
+    {s:'s5_5',a:'kitchen',num:5},
+    {t:" there is an oven, and in the "},
+    {s:'s5_6',a:'bathroom',num:6},
+    {t:" there is a "},
+    {s:'s5_7',a:'toilet',num:7},
+    {t:" and a shower. There is good "},
+    {s:'s5_8',a:'wifi',num:8},
+    {t:" for my computer. My flat is nice!"}
+  ];
+  segments.forEach(seg=>{
+    if(seg.t!==undefined){ para.appendChild(document.createTextNode(seg.t)); }
+    else {
+      const nm=document.createElement('span'); nm.className='q-num'; nm.style.fontSize='0.72rem'; nm.textContent=seg.num; para.appendChild(nm);
+      const slot=mkSlot(seg.s,seg.a,'s5',s5State); para.appendChild(slot); s5State[seg.s]=null;
+    }
+  });
+}
+function checkSec5(){
+  let score=0;
+  Object.entries(s5State).forEach(([k,filled])=>{
+    const slot=document.getElementById('slot-'+k); if(!slot) return;
+    const ans=slot.dataset.answer;
+    const ok=filled&&filled.toLowerCase()===ans.toLowerCase();
+    slot.classList.remove('filled');
+    if(ok){slot.classList.add('correct');score++;}
+    else{slot.classList.add('wrong');slot.textContent=filled?filled+' ✗':'?';}
+    slot.disabled=true;
+  });
+  return score;
+}
+function resetSec5(){ Object.keys(s5State).forEach(k=>s5State[k]=null); s5SelChip=null; buildSec5(); }
+
+// ═══════════════════════════════════════
+// SECTION 6 — ADJECTIVE TEXT INPUT
+// ═══════════════════════════════════════
+// Item 1 given. Items 2-5 scored = 4 marks
+const sec6Data=[
+  { id:'s6_1', sentence:"It's quiet. It isn't ", hint:'b', answer:'busy',  given:true },
+  { id:'s6_2', sentence:"It's a big flat. It's not ", hint:'s', answer:'small'  },
+  { id:'s6_3', sentence:"They're expensive. They aren't ", hint:'c', answer:'cheap'  },
+  { id:'s6_4', sentence:"This computer is good. It isn't ", hint:'b', answer:'bad'    },
+  { id:'s6_5', sentence:"The TV is old. It isn't ", hint:'n', answer:'new'    },
+];
+const s6State={};
+function buildSec6(){
+  const cont=document.getElementById('sec6-container'); cont.innerHTML='';
+  sec6Data.forEach((q,i)=>{
+    const div=document.createElement('div'); div.className='ti-item';
+    const nm=document.createElement('span'); nm.className='ti-num'; nm.textContent=(i+1)+'.';
+    div.appendChild(nm);
+    const wrap=document.createElement('span'); wrap.style.cssText='display:flex;align-items:center;flex-wrap:wrap;gap:0.3rem;font-size:0.9rem;';
+    wrap.appendChild(document.createTextNode(q.sentence));
+    const hintSpan=document.createElement('span'); hintSpan.className='ti-hint'; hintSpan.textContent=q.hint+'...';
+    wrap.appendChild(hintSpan);
+    if(q.given){
+      const ex=document.createElement('span'); ex.className='ex-ans'; ex.textContent=q.answer; wrap.appendChild(ex);
+    } else {
+      const inp=document.createElement('input'); inp.className='ti-input'; inp.id='ti6-'+q.id;
+      inp.placeholder='adjective…'; inp.autocomplete='off'; inp.spellcheck=false; inp.style.minWidth='120px';
+      inp.addEventListener('input',()=>{ s6State[q.id]=inp.value; }); s6State[q.id]='';
+      wrap.appendChild(inp);
+    }
+    div.appendChild(wrap); cont.appendChild(div);
+  });
+}
+function checkSec6(){
+  let score=0;
+  sec6Data.forEach(q=>{
+    if(q.given) return;
+    const inp=document.getElementById('ti6-'+q.id); if(!inp) return;
+    const ok=(s6State[q.id]||'').trim().toLowerCase()===q.answer.toLowerCase();
+    inp.classList.add(ok?'correct':'wrong'); inp.disabled=true;
+    if(!ok){ const rv=document.createElement('span'); rv.className='ti-reveal show'; rv.textContent='✓ '+q.answer; inp.parentNode.insertBefore(rv,inp.nextSibling); }
+    if(ok) score++;
+  });
+  return score;
+}
+function resetSec6(){ Object.keys(s6State).forEach(k=>s6State[k]=''); buildSec6(); }
+
+// ═══════════════════════════════════════
+// SECTION 7 — WORD BANK DIRECTIONS
+// ═══════════════════════════════════════
+const sec7Bank=['down','Excuse','It\'s','near','next','one','past','right','straight','turn','Where\'s'];
+const sec7Data=[
+  { id:'s7l1',  speaker:'A', parts:[{t:'Is there a café '},{s:'s7_1',a:'near'    },{t:' here?'}] },
+  { id:'s7l2',  speaker:'B', parts:[{t:'Yes, there\'s '},{s:'s7_2',a:'one'       },{t:' on Green Street. Go '}] },
+  { id:'s7l3',  speaker:null,parts:[{s:'s7_3',a:'straight'},{t:' on and '},{s:'s7_4',a:'turn'},{t:' left after the bank. The café is '}] },
+  { id:'s7l4',  speaker:null,parts:[{s:'s7_5',a:'next'},{t:' to the cinema.'}] },
+  { id:'s7l5',  speaker:'A', parts:[{s:'s7_6',a:'Excuse'},{t:' me. '},{s:'s7_7',a:"Where's"},{t:' the supermarket, please?'}] },
+  { id:'s7l6',  speaker:'B', parts:[{s:'s7_8',a:"It's"  },{t:' on Station Road. Go '},{s:'s7_9',a:'down'},{t:' this road, '}] },
+  { id:'s7l7',  speaker:null,parts:[{s:'s7_10',a:'past'},{t:' the park and turn '},{s:'s7_11',a:'right'},{t:'. The supermarket is on the left.'}] },
+];
+let s7SelChip=null; const s7State={};
+function buildSec7(){
+  buildWBSection('sec7-bank',sec7Bank,'s7',s7State);
+  const cont=document.getElementById('sec7-conv'); cont.innerHTML='';
+  let qNum=0;
+  sec7Data.forEach(q=>{
+    const hasSlot=q.parts.some(p=>p.s); if(hasSlot) qNum+= q.parts.filter(p=>p.s).length;
+    const line=document.createElement('div'); line.className='conv-line';
+    if(q.speaker){ const spk=document.createElement('span'); spk.className='spk'; spk.textContent=q.speaker+':'; line.appendChild(spk); }
+    const txt=document.createElement('span'); txt.className='conv-text';
+    q.parts.forEach(part=>{
+      if(part.t!==undefined) txt.appendChild(document.createTextNode(part.t));
+      else if(part.s!==undefined){ const slot=mkSlot(part.s,part.a,'s7',s7State); txt.appendChild(slot); s7State[part.s]=null; }
+    });
+    line.appendChild(txt); cont.appendChild(line);
+  });
+  // Re-number blanks visually
+  let n=0;
+  document.querySelectorAll('[id^="slot-s7_"]').forEach(slot=>{ n++; const nm=document.createElement('span'); nm.className='q-num'; nm.style.fontSize='0.7rem'; nm.textContent=n; slot.parentNode.insertBefore(nm,slot); });
+}
+function checkSec7(){
+  let score=0;
+  Object.entries(s7State).forEach(([k,filled])=>{
+    const slot=document.getElementById('slot-'+k); if(!slot) return;
+    const ans=slot.dataset.answer;
+    const ok=filled&&filled.toLowerCase()===ans.toLowerCase();
+    slot.classList.remove('filled');
+    if(ok){slot.classList.add('correct');score++;}
+    else{slot.classList.add('wrong');slot.textContent=filled?filled+' ✗':'?';}
+    slot.disabled=true;
+  });
+  return score;
+}
+function resetSec7(){ Object.keys(s7State).forEach(k=>s7State[k]=null); s7SelChip=null; buildSec7(); }
+
+// ═══════════════════════════════════════
+// GENERIC WORD BANK HELPERS
+// ═══════════════════════════════════════
+const wbSelChips={};
+function buildWBSection(bankId,words,prefix,stateObj){
+  const bankEl=document.getElementById(bankId);
+  const lbl=bankEl.querySelector('.wb-label'); bankEl.innerHTML=''; if(lbl) bankEl.appendChild(lbl);
+  wbSelChips[prefix]=null;
+  words.forEach((word,wi)=>{
+    const chip=document.createElement('button'); chip.className='wb-chip'; chip.textContent=word;
+    chip.id=prefix+'chip-'+wi; chip.dataset.word=word; chip.dataset.prefix=prefix;
+    chip.addEventListener('click',()=>selectWBChip(chip,prefix)); bankEl.appendChild(chip);
+  });
+}
+function mkSlot(slotId,answer,prefix,stateObj){
+  const slot=document.createElement('button'); slot.className='wb-slot';
+  slot.id='slot-'+slotId; slot.dataset.answer=answer; slot.dataset.prefix=prefix;
+  slot.addEventListener('click',()=>fillSlot(slot,prefix,stateObj)); return slot;
+}
+function selectWBChip(chip,prefix){
+  const bankId=chip.parentElement.id;
+  document.querySelectorAll('#'+bankId+' .wb-chip').forEach(c=>c.style.outline='');
+  wbSelChips[prefix]=(wbSelChips[prefix]===chip)?null:chip;
+  if(wbSelChips[prefix]) chip.style.outline='3px solid var(--orange)';
+}
+function fillSlot(slot,prefix,stateObj){
+  const slotKey=slot.id.replace('slot-','');
+  if(stateObj[slotKey]){
+    const oldWord=stateObj[slotKey];
+    const bankId=document.querySelector('[id^="sec"][id$="-bank"]#'+Object.keys(wbSelChips).find(p=>p===prefix))||null;
+    document.querySelectorAll('.wb-chip').forEach(c=>{ if(c.dataset.word===oldWord&&c.dataset.prefix===prefix&&c.classList.contains('used')){ c.classList.remove('used'); } });
+    stateObj[slotKey]=null; slot.textContent=''; slot.classList.remove('filled'); return;
+  }
+  const selChip=wbSelChips[prefix]; if(!selChip) return;
+  const word=selChip.dataset.word; slot.textContent=word; slot.classList.add('filled');
+  stateObj[slotKey]=word; selChip.classList.add('used'); selChip.style.outline=''; wbSelChips[prefix]=null;
+}
+
+// ═══════════════════════════════════════
+// COUNT UNANSWERED
+// ═══════════════════════════════════════
+function countUnanswered(){
+  let u=0;
+  // S1: items 2-6 (index 1-5)
+  sec1Data.forEach((q,i)=>{ if(i===0) return; if(!s1State[q.id]) u++; });
+  // S2
+  Object.values(s2State).forEach(v=>{ if(!v) u++; });
+  // S3
+  sec3Data.forEach(q=>{ if(q.given) return; if(!wo3State[q.id]||wo3State[q.id].placed.length===0) u++; });
+  // S4
+  sec4Data.forEach(q=>{ if(q.given) return; if(!(s4State[q.id]||'').trim()) u++; });
+  // S5
+  Object.values(s5State).forEach(v=>{ if(!v) u++; });
+  // S6
+  sec6Data.forEach(q=>{ if(q.given) return; if(!(s6State[q.id]||'').trim()) u++; });
+  // S7
+  Object.values(s7State).forEach(v=>{ if(!v) u++; });
+  return u;
+}
+
+// ═══════════════════════════════════════
+// CHECK ALL
+// ═══════════════════════════════════════
+function checkAll(){
+  scores.s1=checkSec1(); scores.s2=checkSec2(); scores.s3=checkSec3();
+  scores.s4=checkSec4(); scores.s5=checkSec5(); scores.s6=checkSec6(); scores.s7=checkSec7();
+  updateLiveBar();
+}
+function updateLiveBar(){
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  document.getElementById('live-score').textContent=total+'/'+CFG.maxScore;
+  const correct=document.querySelectorAll('.wb-slot.correct,.wo-word.correct-w,.ti-input.correct,.dd-select.correct').length;
+  const wrong=document.querySelectorAll('.wb-slot.wrong,.wo-word.wrong-w,.ti-input.wrong,.dd-select.wrong').length;
+  document.getElementById('live-correct').textContent=correct;
+  document.getElementById('live-wrong').textContent=wrong;
+}
+
+// ═══════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════
+function handleSubmit(){ const u=countUnanswered(); if(u>0){ document.getElementById('unanswered-count').textContent=u; openModal('modal-incomplete'); } else confirmSubmit(); }
+function confirmSubmit(){ closeModal('modal-incomplete'); clearInterval(timerInt); checkAll(); showResult(); }
+function confirmReset(){ if(confirm('Reset all answers?')) resetAll(); }
+function resetAll(){
+  resetSec1(); resetSec2(); resetSec3(); resetSec4(); resetSec5(); resetSec6(); resetSec7();
+  scores={}; updateLiveBar();
+  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
+}
+
+// ═══════════════════════════════════════
+// RESULT
+// ═══════════════════════════════════════
+function showResult(){
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const pct=Math.round((total/CFG.maxScore)*100);
+  const pass=pct>=60;
+  document.getElementById('res-score-num').textContent=total;
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-pct').style.color=pass?'var(--green)':'var(--red)';
+  const st=document.getElementById('res-status'); st.textContent=pass?'PASS ✓':'FAIL ✗'; st.className='res-status '+(pass?'pass':'fail');
+  let emoji='💪',msg="Keep studying – you'll improve!";
+  if(pct>=90){emoji='🏆';msg='Outstanding! Excellent work!';}
+  else if(pct>=75){emoji='🎉';msg='Great job! Well done!';}
+  else if(pct>=60){emoji='👏';msg='Good work! Keep practising.';}
+  else if(pct>=40){emoji='📚';msg='Not bad – review the sections marked wrong.';}
+  document.getElementById('res-emoji').textContent=emoji;
+  document.getElementById('res-msg').textContent=msg;
+  document.getElementById('res-stu').innerHTML=`<p>👤 <strong>${student.name}</strong></p><p>👥 ${student.group} &nbsp;·&nbsp; 👨‍🏫 ${student.teacher}</p><p>📝 ${CFG.testName} &nbsp;·&nbsp; ⏱️ ${getTimeTaken()}</p>`;
+  document.getElementById('bd-grid').innerHTML=CFG.sections.map(s=>`<div class="bd-cell"><div class="bdc-s">${scores[s.key]??0}/${s.marks}</div><div class="bdc-n">${s.title}</div></div>`).join('');
+  showPage('page-result');
+}
+
+// ═══════════════════════════════════════
+// REVIEW MISTAKES
+// ═══════════════════════════════════════
+function reviewMistakes(){
+  showPage('page-test');
+  setTimeout(()=>{
+    const fw=document.querySelector('.wb-slot.wrong,.wo-word.wrong-w,.ti-input.wrong,.dd-select.wrong');
+    if(fw){ try{fw.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){fw.scrollIntoView(false);} }
+  },300);
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+buildSec1(); buildSec2(); buildSec3(); buildSec4(); buildSec5(); buildSec6(); buildSec7();
+</script>
+</body>
+</html>
