@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Registan Tests — Elementary Unit Test 6</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#E84E0F;--orange-light:#FF6B35;--orange-pale:#FFF0EB;--orange-dark:#C43D0A;--cream:#FDFAF7;--white:#FFFFFF;--ink:#1C1917;--ink-soft:#44403C;--muted:#A8A29E;--border:#E7E5E4;--green:#16A34A;--green-pale:#DCFCE7;--red:#DC2626;--red-pale:#FEE2E2;--blue:#2563EB;--blue-pale:#DBEAFE;--shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow-md:0 4px 16px rgba(0,0,0,0.08);--shadow-lg:0 10px 40px rgba(0,0,0,0.10);--shadow-orange:0 4px 20px rgba(232,78,15,0.25);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}html{-webkit-text-size-adjust:100%;}
+body{font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.page{display:none;min-height:100vh;animation:fadeIn 0.4s ease;}.page.active{display:flex;flex-direction:column;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+#page-login{align-items:center;justify-content:center;padding:2rem 1rem;}
+.login-card{background:var(--white);border-radius:28px;box-shadow:var(--shadow-lg);padding:2.5rem 2rem;width:100%;max-width:420px;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--orange),var(--orange-light));}
+.brand{text-align:center;margin-bottom:1.8rem;}
+.brand-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--orange),var(--orange-light));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.8rem;box-shadow:var(--shadow-orange);font-size:1.8rem;}
+.brand-name{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;color:var(--ink);}.brand-name span{color:var(--orange);}
+.brand-sub{font-size:0.78rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-top:0.2rem;}
+.test-badge{background:var(--orange-pale);border:1px solid rgba(232,78,15,0.2);border-radius:12px;padding:0.8rem 1rem;margin-bottom:1.6rem;text-align:center;}
+.test-badge .tb-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.95rem;color:var(--orange-dark);}
+.test-badge .tb-meta{font-size:0.76rem;color:var(--orange);font-weight:600;margin-top:0.2rem;}
+.form-group{margin-bottom:0.9rem;}
+.form-label{display:block;font-size:0.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:0.35rem;letter-spacing:0.04em;text-transform:uppercase;}
+.form-input{width:100%;padding:0.7rem 0.9rem;border:2px solid var(--border);border-radius:12px;font-family:'Nunito Sans',sans-serif;font-size:0.93rem;color:var(--ink);background:var(--white);transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none;appearance:none;min-height:46px;}
+.form-input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,78,15,0.12);}.form-input::placeholder{color:var(--muted);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;}
+.pw-wrap{position:relative;}.pw-wrap .form-input{padding-right:3rem;}
+.pw-toggle{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.1rem;padding:0.25rem;-webkit-tap-highlight-color:transparent;}
+.error-msg{background:var(--red-pale);color:var(--red);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.82rem;font-weight:600;margin-bottom:0.9rem;display:none;align-items:center;gap:0.4rem;}.error-msg.show{display:flex;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.93rem;padding:0.75rem 1.5rem;border-radius:999px;border:none;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:46px;}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-light));color:white;box-shadow:var(--shadow-orange);width:100%;font-size:0.97rem;margin-top:0.4rem;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(232,78,15,0.35);}
+.btn-secondary{background:white;color:var(--ink);border:2px solid var(--border);}.btn-secondary:hover{border-color:var(--orange);color:var(--orange);}
+.dash-header{background:linear-gradient(135deg,var(--orange-dark),var(--orange),var(--orange-light));padding:2rem 1.5rem 3.5rem;color:white;position:relative;overflow:hidden;}
+.dash-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:32px;background:var(--cream);border-radius:32px 32px 0 0;}
+.dash-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.dash-brand{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;}
+.dash-welcome{font-family:'Nunito',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.3rem;}
+.dash-meta{font-size:0.85rem;opacity:0.85;font-weight:500;}
+.dash-body{padding:1.5rem;max-width:580px;margin:0 auto;margin-top:-0.5rem;}
+.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;margin-bottom:1.4rem;}
+.info-card{background:white;border-radius:12px;padding:0.9rem 0.6rem;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.info-card .ic-val{font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;color:var(--orange);line-height:1;}
+.info-card .ic-label{font-size:0.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:0.3rem;}
+.timer-warn{background:var(--orange-pale);border:1px solid rgba(232,78,15,0.3);border-radius:12px;padding:0.9rem 1rem;display:flex;align-items:center;gap:0.7rem;margin-bottom:1.3rem;font-size:0.86rem;font-weight:600;color:var(--orange-dark);}
+.overview-card{background:white;border-radius:16px;padding:1.3rem;box-shadow:var(--shadow-md);margin-bottom:1.3rem;border:1px solid var(--border);}
+.ov-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.95rem;margin-bottom:0.9rem;display:flex;align-items:center;gap:0.5rem;}
+.sec-list{list-style:none;}.sec-list li{display:flex;align-items:center;gap:0.7rem;padding:0.55rem 0;border-bottom:1px solid var(--border);font-size:0.86rem;}.sec-list li:last-child{border-bottom:none;}
+.sec-num-badge{width:24px;height:24px;background:var(--orange-pale);color:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.76rem;flex-shrink:0;}
+.sec-list .sn{flex:1;font-weight:600;color:var(--ink-soft);}.sec-list .sm{font-weight:700;color:var(--muted);font-size:0.78rem;}
+.test-topbar{background:white;border-bottom:1px solid var(--border);padding:0.7rem 1.1rem;display:flex;align-items:center;gap:0.9rem;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+.tb-brand{font-family:'Nunito',sans-serif;font-weight:900;font-size:0.95rem;color:var(--orange);flex-shrink:0;}
+.tb-name{font-size:0.8rem;font-weight:600;color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.timer-pill{background:var(--orange-pale);border:1.5px solid rgba(232,78,15,0.25);border-radius:999px;padding:0.3rem 0.85rem;display:flex;align-items:center;gap:0.35rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.92rem;color:var(--orange);flex-shrink:0;}
+.timer-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.timer-pill.warning{background:var(--red-pale);border-color:rgba(220,38,38,0.3);color:var(--red);animation:pulse 1s infinite;}
+.timer-pill.warning .timer-dot{background:var(--red);}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.7;}}
+.live-bar{background:white;border-bottom:1px solid var(--border);padding:0.45rem 1.1rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.lp{display:flex;align-items:center;gap:0.35rem;font-size:0.78rem;font-weight:700;color:var(--ink-soft);}
+.lp-dot{width:7px;height:7px;border-radius:50%;}.lp-val{font-family:'Nunito',sans-serif;font-weight:800;color:var(--ink);}
+.test-body{padding:1rem;max-width:720px;margin:0 auto;padding-bottom:5.5rem;}
+.sc{background:white;border-radius:18px;border:1px solid var(--border);padding:1.4rem;margin-bottom:1rem;box-shadow:var(--shadow-sm);}
+.sc-header{display:flex;align-items:flex-start;gap:0.8rem;margin-bottom:1.1rem;padding-bottom:0.9rem;border-bottom:1px solid var(--border);}
+.sc-num{background:linear-gradient(135deg,var(--orange),var(--orange-light));color:white;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.95rem;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(232,78,15,0.3);}
+.sc-info{flex:1;}.sc-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.97rem;}
+.sc-tag{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--orange);font-weight:700;margin-top:0.1rem;}
+.sc-marks{background:var(--orange-pale);color:var(--orange-dark);font-size:0.73rem;font-weight:700;padding:0.22rem 0.55rem;border-radius:999px;border:1px solid rgba(232,78,15,0.2);white-space:nowrap;}
+.sc-instr{font-size:0.86rem;color:var(--muted);font-style:italic;margin-bottom:1rem;line-height:1.5;}
+.word-bank{background:var(--orange-pale);border:1px dashed rgba(232,78,15,0.35);border-radius:12px;padding:0.7rem 0.9rem;margin-bottom:1.1rem;display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;}
+.wb-label{font-size:0.75rem;font-weight:800;color:var(--orange-dark);text-transform:uppercase;letter-spacing:0.06em;width:100%;margin-bottom:0.2rem;}
+.wb-chip{background:white;border:2px solid rgba(232,78,15,0.3);border-radius:999px;padding:0.28rem 0.75rem;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.83rem;cursor:pointer;color:var(--orange-dark);transition:all 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:34px;display:inline-flex;align-items:center;user-select:none;}
+.wb-chip:hover{background:var(--orange);color:white;border-color:var(--orange);}.wb-chip.used{opacity:0.35;pointer-events:none;text-decoration:line-through;}
+.wb-slot{display:inline-flex;align-items:center;justify-content:center;min-width:90px;min-height:28px;border:none;border-bottom:2px solid var(--orange);background:transparent;padding:0 0.3rem;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.83rem;color:var(--orange-dark);cursor:pointer;transition:all 0.2s;border-radius:0;vertical-align:middle;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.wb-slot::after{content:'_ _ _';color:var(--muted);font-weight:400;font-size:0.78rem;letter-spacing:0.05em;}.wb-slot.filled::after{content:'';}
+.wb-slot.correct{color:var(--green);border-bottom:2px solid var(--green);cursor:default;}.wb-slot.correct::after{content:'';}
+.wb-slot.wrong{color:var(--red);border-bottom:2px solid var(--red);cursor:default;}.wb-slot.wrong::after{content:'';}
+.ti-input{border:none;border-bottom:2.5px solid var(--orange);background:transparent;font-family:'Nunito Sans',sans-serif;font-size:0.9rem;color:var(--ink);padding:0.1rem 0.4rem;min-width:160px;outline:none;transition:all 0.2s;-webkit-appearance:none;appearance:none;min-height:34px;}
+.ti-input:focus{border-color:var(--blue);background:var(--blue-pale);border-radius:6px;}
+.ti-input.correct{border-color:var(--green);background:var(--green-pale);color:var(--green);border-radius:6px;font-weight:700;}
+.ti-input.wrong{border-color:var(--red);background:var(--red-pale);color:var(--red);border-radius:6px;}
+.ti-input:disabled{cursor:default;}
+.ti-reveal{font-size:0.77rem;color:var(--green);font-weight:700;display:none;margin-left:0.4rem;}.ti-reveal.show{display:inline;}
+.dd-select{border:2px solid var(--border);border-radius:10px;background:white;font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:var(--ink);padding:0.3rem 0.6rem;outline:none;transition:all 0.2s;min-height:36px;cursor:pointer;}
+.dd-select:focus{border-color:var(--orange);}
+.dd-select.correct{border-color:var(--green);background:var(--green-pale);color:var(--green);font-weight:700;}
+.dd-select.wrong{border-color:var(--red);background:var(--red-pale);color:var(--red);}
+.dd-select:disabled{cursor:default;}
+.choice-btn{display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--border);background:var(--cream);color:var(--ink-soft);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.83rem;padding:0.22rem 0.7rem;border-radius:999px;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:34px;white-space:nowrap;user-select:none;}
+.choice-btn:hover{border-color:var(--orange);background:var(--orange-pale);color:var(--orange-dark);}
+.choice-btn.selected{border-color:var(--orange);background:var(--orange);color:white;}
+.choice-btn.correct{border-color:var(--green);background:var(--green);color:white;cursor:default;}
+.choice-btn.wrong{border-color:var(--red);background:var(--red-pale);color:var(--red);cursor:default;text-decoration:line-through;}
+.choice-btn.show-correct{border-color:var(--green);background:var(--green-pale);color:var(--green);cursor:default;}
+.choice-btn:disabled{cursor:default;}
+.q-num{font-family:'Nunito',sans-serif;font-weight:800;color:var(--orange);font-size:0.76rem;background:var(--orange-pale);border-radius:4px;padding:0 0.28rem;flex-shrink:0;}
+.ex-ans{display:inline-flex;align-items:center;background:var(--blue-pale);border:1.5px solid var(--blue);color:var(--blue);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.83rem;padding:0.18rem 0.65rem;border-radius:999px;}
+.ex3-item{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.ex3-item:last-child{border-bottom:none;}
+.ex3-sentence{font-size:0.9rem;color:var(--ink-soft);margin-bottom:0.5rem;line-height:1.6;}
+.ex3-correction{display:none;align-items:center;gap:0.5rem;margin-top:0.4rem;}
+.ex3-correction.visible{display:flex;}
+.msg-block{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-bottom:0.8rem;font-size:0.9rem;line-height:2.5;color:var(--ink-soft);}
+.msg-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.8rem;color:var(--orange);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;}
+.submit-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;gap:0.7rem;justify-content:center;box-shadow:0 -4px 20px rgba(0,0,0,0.07);z-index:100;}
+.submit-bar .btn{min-width:130px;}
+@supports(-webkit-touch-callout:none){.submit-bar{padding-bottom:calc(0.85rem + env(safe-area-inset-bottom));}#page-login{padding-bottom:calc(2rem + env(safe-area-inset-bottom));}}
+#page-result{align-items:center;justify-content:flex-start;padding:2rem 1rem 4rem;}
+.result-card{background:white;border-radius:28px;box-shadow:var(--shadow-lg);padding:2.3rem 1.8rem;width:100%;max-width:500px;margin:0 auto;text-align:center;}
+.res-emoji{font-size:3.2rem;margin-bottom:0.4rem;}
+.res-label{font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.res-score{font-family:'Nunito',sans-serif;font-size:3.8rem;font-weight:900;color:var(--orange);line-height:1;margin:0.3rem 0;letter-spacing:-0.03em;}
+.res-max{font-size:1.4rem;color:var(--muted);font-weight:700;}
+.res-pct{font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:800;margin:0.4rem 0;}
+.res-status{display:inline-block;padding:0.3rem 1.1rem;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;letter-spacing:0.05em;margin:0.4rem 0 0.9rem;}
+.res-status.pass{background:var(--green-pale);color:var(--green);}.res-status.fail{background:var(--red-pale);color:var(--red);}
+.res-msg{font-size:0.88rem;color:var(--ink-soft);margin-bottom:1.3rem;line-height:1.6;}
+.res-stu{background:var(--orange-pale);border-radius:10px;padding:0.75rem 0.9rem;text-align:left;margin-bottom:1.1rem;font-size:0.83rem;}
+.res-stu p{margin-bottom:0.2rem;color:var(--ink-soft);}.res-stu strong{color:var(--orange-dark);font-weight:700;}
+.res-divider{border:none;border-top:1px solid var(--border);margin:1rem 0;}
+.bd-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.7rem;text-align:left;}
+.bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:0.55rem;margin-bottom:1.3rem;}
+.bd-cell{background:var(--cream);border-radius:10px;padding:0.65rem 0.5rem;text-align:center;border:1px solid var(--border);}
+.bd-cell .bdc-s{font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:var(--orange);}
+.bd-cell .bdc-n{font-size:0.68rem;color:var(--muted);font-weight:600;margin-top:0.2rem;line-height:1.3;}
+.res-actions{display:flex;gap:0.7rem;flex-wrap:wrap;justify-content:center;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.show{display:flex;}
+.modal{background:white;border-radius:24px;padding:1.8rem;max-width:360px;width:100%;box-shadow:var(--shadow-lg);text-align:center;}
+.modal-icon{font-size:2.3rem;margin-bottom:0.6rem;}
+.modal-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:0.4rem;}
+.modal-msg{font-size:0.85rem;color:var(--muted);margin-bottom:1.3rem;line-height:1.6;}
+.modal-actions{display:flex;gap:0.7rem;justify-content:center;}
+@media(max-width:480px){.form-row{grid-template-columns:1fr;}.info-cards{gap:0.45rem;}.info-card{padding:0.65rem 0.35rem;}.info-card .ic-val{font-size:1.1rem;}.res-score{font-size:3rem;}.sc{padding:1.1rem;}}
+@media print{.submit-bar,.test-topbar,.live-bar{display:none !important;}.test-body{padding-bottom:0;}}
+</style></head><body>
+<div class="modal-overlay" id="modal-incomplete"><div class="modal"><div class="modal-icon">⚠️</div><div class="modal-title">Unanswered Questions!</div><div class="modal-msg">You have <strong id="unanswered-count">0</strong> unanswered questions. Submit anyway?</div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modal-incomplete')">Go Back</button><button class="btn btn-primary" onclick="confirmSubmit()">Submit Anyway</button></div></div></div>
+<div class="modal-overlay" id="modal-timeout"><div class="modal"><div class="modal-icon">⏰</div><div class="modal-title">Time's Up!</div><div class="modal-msg">Your time has run out. Answers submitted automatically.</div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('modal-timeout');showResult();">See Results</button></div></div></div>
+
+<div id="page-login" class="page active"><div class="login-card"><div class="brand"><div class="brand-logo">📝</div><div class="brand-name">Registan <span>Tests</span></div><div class="brand-sub">Interactive Assessment</div></div><div class="test-badge"><div class="tb-title">ROADMAP A2+ · Elementary Unit Test 6</div><div class="tb-meta">Elementary · Unit Tests · 50 marks · 25 minutes</div></div><div class="error-msg" id="login-error"><span>🔒</span><span id="login-err-txt">Incorrect password.</span></div><div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="inp-name" placeholder="e.g. Aisha Karimova" autocomplete="name"/></div><div class="form-row"><div class="form-group"><label class="form-label">Group</label><input class="form-input" type="text" id="inp-group" placeholder="e.g. Group 3"/></div><div class="form-group"><label class="form-label">Teacher</label><input class="form-input" type="text" id="inp-teacher" placeholder="e.g. Mr. Khurshid"/></div></div><div class="form-group"><label class="form-label">Password</label><div class="pw-wrap"><input class="form-input" type="password" id="inp-pw" placeholder="Enter test password"/><button class="pw-toggle" onclick="togglePw()" type="button">👁️</button></div></div><button class="btn btn-primary" onclick="handleLogin()">Start Test →</button></div></div>
+
+<div id="page-dashboard" class="page"><div class="dash-header"><div class="dash-header-top"><div class="dash-brand">📝 Registan Tests</div><button class="btn" style="color:rgba(255,255,255,0.8);font-size:0.78rem;background:rgba(255,255,255,0.15);padding:0.4rem 0.9rem;min-height:36px;" onclick="showPage('page-login')">← Back</button></div><div class="dash-welcome">Welcome, <span id="dash-name">Student</span>! 👋</div><div class="dash-meta" id="dash-meta"></div></div><div class="dash-body"><div class="info-cards"><div class="info-card"><div class="ic-val">50</div><div class="ic-label">Marks</div></div><div class="info-card"><div class="ic-val">7</div><div class="ic-label">Sections</div></div><div class="info-card"><div class="ic-val">25m</div><div class="ic-label">Time</div></div></div><div class="timer-warn"><span style="font-size:1.3rem">⏱️</span><div>Timer starts when you click <strong>Begin Test</strong>. You cannot pause.</div></div><div class="overview-card"><div class="ov-title">📋 Test Overview</div><ul class="sec-list"><li><div class="sec-num-badge">1</div><span class="sn">will / 'll / won't + be or have</span><span class="sm">6 marks</span></li><li><div class="sec-num-badge">2</div><span class="sn">Present continuous from prompts</span><span class="sm">8 marks</span></li><li><div class="sec-num-badge">3</div><span class="sn">Correct or incorrect (might / may)</span><span class="sm">6 marks</span></li><li><div class="sec-num-badge">4</div><span class="sn">Complete sentences (word bank)</span><span class="sm">7 marks</span></li><li><div class="sec-num-badge">5</div><span class="sn">Find and correct the verb mistake</span><span class="sm">8 marks</span></li><li><div class="sec-num-badge">6</div><span class="sn">Cross out the wrong word</span><span class="sm">5 marks</span></li><li><div class="sec-num-badge">7</div><span class="sn">Complete phone messages (word bank)</span><span class="sm">10 marks</span></li></ul></div><button class="btn btn-primary" style="width:100%" onclick="beginTest()">Begin Test →</button></div></div>
+
+<div id="page-test" class="page">
+<div class="test-topbar"><div class="tb-brand">Registan</div><div class="tb-name">Elementary Unit Test 6</div><div class="timer-pill" id="timer-pill"><div class="timer-dot"></div><span id="timer-display">25:00</span></div></div>
+<div class="live-bar"><div class="lp"><span class="lp-dot" style="background:var(--orange)"></span>Score: <span class="lp-val" id="live-score">0/50</span></div><div class="lp"><span class="lp-dot" style="background:var(--green)"></span>Correct: <span class="lp-val" id="live-correct">0</span></div><div class="lp"><span class="lp-dot" style="background:var(--red)"></span>Wrong: <span class="lp-val" id="live-wrong">0</span></div></div>
+<div class="test-body">
+<div class="sc"><div class="sc-header"><div class="sc-num">1</div><div class="sc-info"><div class="sc-title">will / 'll / won't + be or have</div><div class="sc-tag">Grammar · Text Input</div></div><div class="sc-marks">/ 6 marks</div></div><p class="sc-instr">Complete each sentence with will/'ll/won't plus be or have. Item 1 is an example.</p><div id="sec1-container"></div></div>
+<div class="sc"><div class="sc-header"><div class="sc-num">2</div><div class="sc-info"><div class="sc-title">Present continuous from prompts</div><div class="sc-tag">Grammar · Text Input</div></div><div class="sc-marks">/ 8 marks</div></div><p class="sc-instr">Write sentences or questions using the present continuous. Item 1 is an example.</p><div id="sec2-container"></div></div>
+<div class="sc"><div class="sc-header"><div class="sc-num">3</div><div class="sc-info"><div class="sc-title">Correct or incorrect?</div><div class="sc-tag">Grammar · Tick + Correction</div></div><div class="sc-marks">/ 6 marks</div></div><p class="sc-instr">Is the sentence correct (✓) or incorrect (✗)? If incorrect, type the corrected word or phrase. Items 1 is an example.</p><div id="sec3-container"></div></div>
+<div class="sc"><div class="sc-header"><div class="sc-num">4</div><div class="sc-info"><div class="sc-title">Complete sentences</div><div class="sc-tag">Vocabulary · Word Bank</div></div><div class="sc-marks">/ 7 marks</div></div><p class="sc-instr">Tap a word from the box, then tap the blank. Item 1 is an example.</p><div class="word-bank" id="sec4-bank"><div class="wb-label">Word Bank</div></div><div id="sec4-container"></div></div>
+<div class="sc"><div class="sc-header"><div class="sc-num">5</div><div class="sc-info"><div class="sc-title">Find and correct the verb mistake</div><div class="sc-tag">Vocabulary · Text Input</div></div><div class="sc-marks">/ 8 marks</div></div><p class="sc-instr">Each sentence has the wrong verb (make/do/have). Type the correct verb only. Item 1 is an example.</p><div id="sec5-container"></div></div>
+<div class="sc"><div class="sc-header"><div class="sc-num">6</div><div class="sc-info"><div class="sc-title">Cross out the wrong word</div><div class="sc-tag">Vocabulary · Inline Choice</div></div><div class="sc-marks">/ 5 marks</div></div><p class="sc-instr">Tap the word that does NOT go with the verb. Item 1 is an example.</p><div id="sec6-container"></div></div>
+<div class="sc"><div class="sc-header"><div class="sc-num">7</div><div class="sc-info"><div class="sc-title">Complete the phone messages</div><div class="sc-tag">Function · Word Bank</div></div><div class="sc-marks">/ 10 marks</div></div><p class="sc-instr">Tap a phrase from the box, then tap the blank. Item 1 is an example.</p><div class="word-bank" id="sec7-bank"><div class="wb-label">Word Bank</div></div><div id="sec7-container"></div></div>
+</div>
+<div class="submit-bar"><button class="btn btn-secondary" onclick="confirmReset()">↺ Reset</button><button class="btn btn-primary" onclick="handleSubmit()">Check &amp; Submit →</button></div></div>
+
+<div id="page-result" class="page"><div class="result-card"><div class="res-emoji" id="res-emoji">🏆</div><div class="res-label">Your Score</div><div class="res-score"><span id="res-score-num">0</span><span class="res-max">/50</span></div><div class="res-pct" id="res-pct"></div><div class="res-status" id="res-status"></div><div class="res-msg" id="res-msg"></div><div class="res-stu" id="res-stu"></div><hr class="res-divider"><div class="bd-title">Section Breakdown</div><div class="bd-grid" id="bd-grid"></div><hr class="res-divider"><div class="res-actions"><button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button><button class="btn btn-primary" onclick="reviewMistakes()">🔍 Review Mistakes</button></div></div></div>
+
+<script>
+const CFG={testName:'Elementary Unit Test 6',maxScore:50,timeMin:25,password:'elem2024',sections:[{key:'s1',title:'will/won\'t',marks:6},{key:'s2',title:'Pres. continuous',marks:8},{key:'s3',title:'Correct/wrong',marks:6},{key:'s4',title:'Word bank',marks:7},{key:'s5',title:'Correct verb',marks:8},{key:'s6',title:'Cross out',marks:5},{key:'s7',title:'Messages',marks:10}]};
+let student={},timerInt=null,secLeft=CFG.timeMin*60,scores={};const wbSelChips={};
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function openModal(id){document.getElementById(id).classList.add('show');}function closeModal(id){document.getElementById(id).classList.remove('show');}
+function togglePw(){const i=document.getElementById('inp-pw');i.type=i.type==='password'?'text':'password';}
+function handleLogin(){const name=document.getElementById('inp-name').value.trim(),group=document.getElementById('inp-group').value.trim(),teacher=document.getElementById('inp-teacher').value.trim(),pw=document.getElementById('inp-pw').value.trim();const errEl=document.getElementById('login-error'),errTxt=document.getElementById('login-err-txt');if(!name||!group||!teacher||!pw){errTxt.textContent='Please fill in all fields.';errEl.classList.add('show');return;}if(pw!==CFG.password){errTxt.textContent='Incorrect password. Please try again.';errEl.classList.add('show');document.getElementById('inp-pw').value='';return;}errEl.classList.remove('show');student={name,group,teacher};document.getElementById('dash-name').textContent=name.split(' ')[0];document.getElementById('dash-meta').textContent=`${group} · ${teacher}`;showPage('page-dashboard');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('page-login').classList.contains('active'))handleLogin();});
+function beginTest(){showPage('page-test');startTimer();}
+function startTimer(){secLeft=CFG.timeMin*60;updateTimer();timerInt=setInterval(()=>{secLeft--;updateTimer();if(secLeft<=0){clearInterval(timerInt);checkAll();openModal('modal-timeout');}},1000);}
+function updateTimer(){const m=Math.floor(secLeft/60),s=secLeft%60;document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;if(secLeft<=300)document.getElementById('timer-pill').classList.add('warning');}
+function getTimeTaken(){const e=CFG.timeMin*60-secLeft;return `${Math.floor(e/60)}m ${e%60}s`;}
+
+// SEC 1 — WILL/WON'T + BE/HAVE
+const sec1Data=[
+  {id:'s1_1',before:"I don't think she",after:" happy there.",answer:"'ll be",alts:['will be'],given:true},
+  {id:'s1_2',before:"I definitely think they",after:" fun today.",answer:"'ll have",alts:['will have']},
+  {id:'s1_3',before:"He's busy, so he",after:" time to call.",answer:"won't have"},
+  {id:'s1_4',before:"Don't worry, the weather",after:" nice later.",answer:"'ll be",alts:['will be']},
+  {id:'s1_5',before:"Their plane is delayed, so they",after:" late.",answer:"'ll be",alts:['will be']},
+  {id:'s1_6',before:"We have so much to do! It",after:" easy to finish on time.",answer:"won't be"},
+  {id:'s1_7',before:"I think he",after:" a party on his birthday.",answer:"'ll have",alts:['will have']},
+];
+const s1State={};
+function buildSec1(){const cont=document.getElementById('sec1-container');cont.innerHTML='';sec1Data.forEach((q,i)=>{const div=document.createElement('div');div.style.cssText='margin-bottom:0.9rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-size:0.9rem;';const nm=document.createElement('span');nm.className='q-num';nm.textContent=i+1;div.appendChild(nm);div.appendChild(document.createTextNode(q.before+' '));if(q.given){const ex=document.createElement('span');ex.className='ex-ans';ex.textContent=q.answer;div.appendChild(ex);}else{const inp=document.createElement('input');inp.className='ti-input';inp.id='ti1-'+q.id;inp.placeholder="will/'ll/won't…";inp.autocomplete='off';inp.spellcheck=false;inp.style.minWidth='130px';inp.addEventListener('input',()=>{s1State[q.id]=inp.value;});s1State[q.id]='';div.appendChild(inp);}div.appendChild(document.createTextNode(' '+q.after));cont.appendChild(div);});}
+function checkSec1(){let sc=0;sec1Data.forEach(q=>{if(q.given)return;const inp=document.getElementById('ti1-'+q.id);if(!inp)return;const val=(s1State[q.id]||'').trim().toLowerCase();const ok=val===q.answer.toLowerCase()||(q.alts||[]).some(a=>val===a.toLowerCase());inp.classList.add(ok?'correct':'wrong');inp.disabled=true;if(!ok){const rv=document.createElement('span');rv.className='ti-reveal show';rv.textContent='✓ '+q.answer;inp.parentNode.insertBefore(rv,inp.nextSibling);}if(ok)sc++;});return sc;}
+function resetSec1(){Object.keys(s1State).forEach(k=>s1State[k]='');buildSec1();}
+
+// SEC 2 — PRESENT CONTINUOUS FROM PROMPTS
+const sec2Data=[
+  {id:'s2_1',prompt:"Jack / meet Terry / Monday evening",answer:"Jack's meeting Terry on Monday evening.",alts:["Jack is meeting Terry on Monday evening."],given:true},
+  {id:'s2_2',prompt:"They / not / stay in Bristol / March",answer:"They aren't staying in Bristol in March.",alts:["They are not staying in Bristol in March.","They're not staying in Bristol in March."]},
+  {id:'s2_3',prompt:"She / see the doctor / 10 a.m.",answer:"She's seeing the doctor at 10 a.m.",alts:["She is seeing the doctor at 10 a.m."]},
+  {id:'s2_4',prompt:"We / go to beach with Dan / 23rd June",answer:"Are we going to the beach with Dan on the 23rd of June?",alts:["Are we going to the beach with Dan on (the) 23rd (of) June?","Are we going to the beach with Dan on the 23rd June?"]},
+  {id:'s2_5',prompt:"I / have lunch with Sara / next week",answer:"I'm having lunch with Sara next week.",alts:["I am having lunch with Sara next week."]},
+];
+const s2State={};
+function buildSec2(){const cont=document.getElementById('sec2-container');cont.innerHTML='';sec2Data.forEach((q,i)=>{const div=document.createElement('div');div.style.cssText='margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);';if(i===sec2Data.length-1)div.style.borderBottom='none';const promptDiv=document.createElement('div');promptDiv.style.cssText='font-size:0.82rem;color:var(--muted);font-style:italic;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem;';const nm=document.createElement('span');nm.className='q-num';nm.textContent=i+1;promptDiv.appendChild(nm);promptDiv.appendChild(document.createTextNode(q.prompt));div.appendChild(promptDiv);if(q.given){const ex=document.createElement('span');ex.className='ex-ans';ex.style.fontSize='0.82rem';ex.textContent=q.answer;div.appendChild(ex);}else{const inp=document.createElement('input');inp.className='ti-input';inp.id='ti2-'+q.id;inp.placeholder='full sentence…';inp.autocomplete='off';inp.spellcheck=false;inp.style.width='100%';inp.style.minWidth='200px';inp.addEventListener('input',()=>{s2State[q.id]=inp.value;});s2State[q.id]='';div.appendChild(inp);}cont.appendChild(div);});}
+function normS(s){return s.toLowerCase().replace(/[?.!,]/g,'').replace(/\s+/g,' ').trim();}
+function checkSec2(){let sc=0;sec2Data.forEach(q=>{if(q.given)return;const inp=document.getElementById('ti2-'+q.id);if(!inp)return;const val=normS(s2State[q.id]||'');const all=[q.answer,...(q.alts||[])].map(a=>normS(a));const ok=all.includes(val);inp.classList.add(ok?'correct':'wrong');inp.disabled=true;if(!ok){const rv=document.createElement('span');rv.className='ti-reveal show';rv.textContent='✓ '+q.answer;inp.parentNode.insertBefore(rv,inp.nextSibling);}if(ok)sc+=2;});return sc;}
+function resetSec2(){Object.keys(s2State).forEach(k=>s2State[k]='');buildSec2();}
+
+// SEC 3 — TICK/CORRECT (might/may)
+// correct: 2,4; wrong: 1,3,5,6,7
+const sec3Data=[
+  {id:'s3_1',sentence:"I feel ill so I might might not come to the party.",isCorrect:false,correction:'might not',given:true},
+  {id:'s3_2',sentence:"It's very cold. It may snow later.",isCorrect:true},
+  {id:'s3_3',sentence:"She's really busy but she might calling you later.",isCorrect:false,correction:'call'},
+  {id:'s3_4',sentence:"It's very late and I may not be ready in time.",isCorrect:true},
+  {id:'s3_5',sentence:"I think Paul might to play golf this afternoon.",isCorrect:false,correction:'play'},
+  {id:'s3_6',sentence:"The party is boring, so they may not go home.",isCorrect:false,correction:'may not stay'},
+  {id:'s3_7',sentence:"It's hard work and we might not to do it all today.",isCorrect:false,correction:'might not do'},
+];
+const s3TickState={},s3CorrState={};
+function buildSec3(){const cont=document.getElementById('sec3-container');cont.innerHTML='';sec3Data.forEach((q,i)=>{const div=document.createElement('div');div.className='ex3-item';const sentDiv=document.createElement('div');sentDiv.className='ex3-sentence';const nm=document.createElement('span');nm.className='q-num';nm.style.marginRight='0.4rem';nm.textContent=i+1;sentDiv.appendChild(nm);sentDiv.appendChild(document.createTextNode(q.sentence));div.appendChild(sentDiv);if(q.given){const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;';const badge=document.createElement('span');badge.style.cssText=`display:inline-flex;align-items:center;padding:0.2rem 0.7rem;border-radius:999px;font-family:Nunito,sans-serif;font-weight:800;font-size:0.82rem;${q.isCorrect?'background:var(--green-pale);color:var(--green);':'background:var(--red-pale);color:var(--red);'}`;badge.textContent=q.isCorrect?'✓ Correct':'✗ Wrong';row.appendChild(badge);if(!q.isCorrect){const cs=document.createElement('span');cs.className='ex-ans';cs.style.fontSize='0.83rem';cs.textContent='→ '+q.correction;row.appendChild(cs);}const note=document.createElement('span');note.style.cssText='font-size:0.73rem;color:var(--muted);font-style:italic;';note.textContent='(example)';row.appendChild(note);div.appendChild(row);}else{const ctrlRow=document.createElement('div');ctrlRow.style.cssText='display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;';const sel=document.createElement('select');sel.className='dd-select';sel.id='tick3-'+q.id;['—','✓ Correct','✗ Wrong'].forEach(opt=>{const o=document.createElement('option');o.value=opt==='—'?'':opt;o.textContent=opt;sel.appendChild(o);});sel.addEventListener('change',()=>{s3TickState[q.id]=sel.value;const cr=document.getElementById('corr3-'+q.id);cr&&(sel.value==='✗ Wrong'?cr.classList.add('visible'):cr.classList.remove('visible'));});s3TickState[q.id]='';ctrlRow.appendChild(sel);div.appendChild(ctrlRow);const corrRow=document.createElement('div');corrRow.className='ex3-correction';corrRow.id='corr3-'+q.id;const lbl=document.createElement('span');lbl.style.cssText='font-size:0.8rem;color:var(--muted);font-weight:600;';lbl.textContent='Correction:';const inp=document.createElement('input');inp.className='ti-input';inp.id='corrinp3-'+q.id;inp.placeholder='correct word/phrase…';inp.autocomplete='off';inp.spellcheck=false;inp.style.minWidth='140px';inp.addEventListener('input',()=>{s3CorrState[q.id]=inp.value;});s3CorrState[q.id]='';corrRow.appendChild(lbl);corrRow.appendChild(inp);div.appendChild(corrRow);}cont.appendChild(div);});}
+function checkSec3(){let sc=0;sec3Data.forEach(q=>{if(q.given)return;const sel=document.getElementById('tick3-'+q.id);if(!sel)return;const tickVal=s3TickState[q.id]||'';const uC=tickVal==='✓ Correct',uW=tickVal==='✗ Wrong';const tickOk=(q.isCorrect&&uC)||(!q.isCorrect&&uW);let corrOk=true;if(!q.isCorrect){const val=(s3CorrState[q.id]||'').trim().toLowerCase();corrOk=val===q.correction.toLowerCase();}sel.classList.add(tickOk?'correct':'wrong');sel.disabled=true;if(!q.isCorrect){const inp=document.getElementById('corrinp3-'+q.id);if(inp){inp.classList.add(corrOk?'correct':'wrong');inp.disabled=true;if(!corrOk){const rv=document.createElement('span');rv.className='ti-reveal show';rv.textContent='✓ '+q.correction;inp.parentNode.insertBefore(rv,inp.nextSibling);}}}if(tickOk&&corrOk)sc++;});return Math.min(sc,6);}
+function resetSec3(){Object.keys(s3TickState).forEach(k=>s3TickState[k]='');Object.keys(s3CorrState).forEach(k=>s3CorrState[k]='');buildSec3();}
+
+// SEC 4 — WORD BANK
+const sec4Bank=['earn','fit','good','humour','life','social','time','well'];
+const sec4Data=[
+  {id:'s4_1',before:"I don't have much free ",s:'s4s_1',a:'time',after:" these days.",given:true},
+  {id:'s4_2',before:'They ',s:'s4s_2',a:'earn',after:' lots of money but they have stressful jobs.'},
+  {id:'s4_3',before:'To be healthy, you should eat ',s:'s4s_3',a:'well',after:'.'},
+  {id:'s4_4',before:"I'd like to have a simple ",s:'s4s_4',a:'life',after:'.'},
+  {id:'s4_5',before:'Do you want to have a ',s:'s4s_5',a:'good',after:' career?'},
+  {id:'s4_6',before:'Exercise and eat well to keep ',s:'s4s_6',a:'fit',after:'.'},
+  {id:'s4_7',before:"He's popular and has a busy ",s:'s4s_7',a:'social',after:' life.'},
+  {id:'s4_8',before:"She's funny! I love her sense of ",s:'s4s_8',a:'humour',after:'.'},
+];
+const s4State={};
+function buildSec4(){buildWB('sec4-bank',sec4Bank,'s4');const cont=document.getElementById('sec4-container');cont.innerHTML='';sec4Data.forEach((q,i)=>{const div=document.createElement('div');div.style.cssText='margin-bottom:0.85rem;display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap;font-size:0.9rem;line-height:2;';const nm=document.createElement('span');nm.className='q-num';nm.textContent=i+1;div.appendChild(nm);div.appendChild(document.createTextNode(' '+q.before));if(q.given){const ex=document.createElement('span');ex.className='ex-ans';ex.textContent=q.a;div.appendChild(ex);}else{const slot=mkSlot(q.s,q.a,'s4',s4State);div.appendChild(slot);s4State[q.s]=null;}div.appendChild(document.createTextNode(q.after));cont.appendChild(div);});}
+function checkSec4(){let sc=0;Object.entries(s4State).forEach(([k,filled])=>{const slot=document.getElementById('slot-'+k);if(!slot)return;const ok=filled&&filled.toLowerCase()===slot.dataset.answer.toLowerCase();slot.classList.remove('filled');if(ok){slot.classList.add('correct');sc++;}else{slot.classList.add('wrong');slot.textContent=filled?filled+' ✗':'?';}slot.disabled=true;});return sc;}
+function resetSec4(){Object.keys(s4State).forEach(k=>s4State[k]=null);buildSec4();}
+
+// SEC 5 — FIND AND CORRECT VERB MISTAKE
+const sec5Data=[
+  {id:'s5_1',sentence:'I did an appointment with my dentist.',answer:'made',given:true},
+  {id:'s5_2',sentence:"I'm making a haircut today at 3p.m.",answer:'having'},
+  {id:'s5_3',sentence:'They might make lunch at a restaurant.',answer:'have'},
+  {id:'s5_4',sentence:'We did a meeting with Jo this morning.',answer:'had'},
+  {id:'s5_5',sentence:'Did she make some exercise yesterday?',answer:'do'},
+  {id:'s5_6',sentence:'What excuse did Ryan do this time?',answer:'make'},
+  {id:'s5_7',sentence:"I'm having some work at the moment.",answer:'doing'},
+  {id:'s5_8',sentence:'On my birthday, I may do a cake.',answer:'make'},
+  {id:'s5_9',sentence:"He'll have some shopping after work.",answer:'do'},
+];
+const s5State={};
+function buildSec5(){const cont=document.getElementById('sec5-container');cont.innerHTML='';sec5Data.forEach((q,i)=>{const div=document.createElement('div');div.style.cssText='margin-bottom:0.9rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-size:0.9rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);';if(i===sec5Data.length-1)div.style.borderBottom='none';const nm=document.createElement('span');nm.className='q-num';nm.textContent=i+1;div.appendChild(nm);const sent=document.createElement('span');sent.style.cssText='flex:1;color:var(--ink-soft);';sent.textContent=q.sentence;div.appendChild(sent);const arrow=document.createElement('span');arrow.style.cssText='color:var(--muted);font-size:0.85rem;';arrow.textContent='→';div.appendChild(arrow);if(q.given){const ex=document.createElement('span');ex.className='ex-ans';ex.textContent=q.answer;div.appendChild(ex);}else{const inp=document.createElement('input');inp.className='ti-input';inp.id='ti5-'+q.id;inp.placeholder='correct verb…';inp.autocomplete='off';inp.spellcheck=false;inp.style.minWidth='100px';inp.addEventListener('input',()=>{s5State[q.id]=inp.value;});s5State[q.id]='';div.appendChild(inp);}cont.appendChild(div);});}
+function checkSec5(){let sc=0;sec5Data.forEach(q=>{if(q.given)return;const inp=document.getElementById('ti5-'+q.id);if(!inp)return;const ok=(s5State[q.id]||'').trim().toLowerCase()===q.answer.toLowerCase();inp.classList.add(ok?'correct':'wrong');inp.disabled=true;if(!ok){const rv=document.createElement('span');rv.className='ti-reveal show';rv.textContent='✓ '+q.answer;inp.parentNode.insertBefore(rv,inp.nextSibling);}if(ok)sc++;});return sc;}
+function resetSec5(){Object.keys(s5State).forEach(k=>s5State[k]='');buildSec5();}
+
+// SEC 6 — CROSS OUT WRONG WORD (item 1 given)
+// answers: 1=outside(given), 2=some homework, 3=nothing, 4=some music, 5=swimming, 6=guitar in a band
+const sec6Data=[
+  {id:'q6_1',verb:'do',opts:['yoga','some activities','outside'],wrong:'outside',given:true},
+  {id:'q6_2',verb:'play',opts:['tennis','some homework','a video game'],wrong:'some homework'},
+  {id:'q6_3',verb:'go',opts:['clubbing','nothing','running'],wrong:'nothing'},
+  {id:'q6_4',verb:'do',opts:['some music','some homework','gardening'],wrong:'some music'},
+  {id:'q6_5',verb:'play',opts:['swimming','a video game','football'],wrong:'swimming'},
+  {id:'q6_6',verb:'go',opts:['shopping','guitar in a band','out for dinner'],wrong:'guitar in a band'},
+];
+const s6State={};
+function buildSec6(){const cont=document.getElementById('sec6-container');cont.innerHTML='';sec6Data.forEach((q,i)=>{const div=document.createElement('div');div.style.cssText='margin-bottom:0.9rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;';const nm=document.createElement('span');nm.className='q-num';nm.textContent=i+1;const verbSpan=document.createElement('span');verbSpan.style.cssText='font-family:Nunito,sans-serif;font-weight:800;color:var(--orange);font-size:0.9rem;min-width:2.5rem;';verbSpan.textContent=q.verb;div.appendChild(nm);div.appendChild(verbSpan);if(q.given){q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='choice-btn';if(opt===q.wrong)btn.classList.add('wrong');else btn.classList.add('show-correct');btn.textContent=opt;btn.disabled=true;div.appendChild(btn);});const note=document.createElement('span');note.style.cssText='font-size:0.73rem;color:var(--muted);font-style:italic;';note.textContent='(example)';div.appendChild(note);}else{const grp=document.createElement('span');grp.style.cssText='display:flex;gap:0.3rem;flex-wrap:wrap;';grp.id='grp6-'+q.id;q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='choice-btn';btn.textContent=opt;btn.dataset.qid=q.id;btn.dataset.val=opt;btn.addEventListener('click',()=>selC6(btn,q.id));grp.appendChild(btn);});s6State[q.id]=null;div.appendChild(grp);}cont.appendChild(div);});}
+function selC6(btn,qid){document.getElementById('grp6-'+qid).querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));if(s6State[qid]===btn.dataset.val){s6State[qid]=null;return;}btn.classList.add('selected');s6State[qid]=btn.dataset.val;}
+function checkSec6(){let sc=0;sec6Data.forEach(q=>{if(q.given)return;const grp=document.getElementById('grp6-'+q.id);if(!grp)return;const sel=s6State[q.id];grp.querySelectorAll('.choice-btn').forEach(btn=>{btn.disabled=true;btn.classList.remove('selected');if(btn.dataset.val===q.wrong)btn.classList.add(sel===q.wrong?'wrong':'show-correct');else btn.classList.add(sel===btn.dataset.val?'wrong':'correct');});if(sel===q.wrong)sc++;});return sc;}
+function resetSec6(){Object.keys(s6State).forEach(k=>s6State[k]=null);buildSec6();}
+
+// SEC 7 — WORD BANK MESSAGES
+const sec7Bank=['call us back','calling to remind',"can you call me","I'm really sorry","it's your father","just calling about","let me know","text me to let me","this is a message","this is Danny","when you have time"];
+const sec7Messages=[
+  {title:'Message 1',parts:[
+    {t:"Hello Chris. Uh, "},{s:'s7_1',a:'this is Danny'},{t:". "},{s:'s7_2',a:"I'm really sorry"},{t:", but I have to cancel our plans. I'm busy tomorrow. So "},{s:'s7_3',a:"can you call me"},{t:" back when you get this? Or "},{s:'s7_4',a:"text me to let me"},{t:" know another day when you're free?"},
+  ]},
+  {title:'Message 2',parts:[
+    {t:"Chris, "},{s:'s7_5',a:"it's your father"},{t:". I'm "},{s:'s7_6',a:"just calling about"},{t:" Mum's birthday meal on Saturday. Give me a call "},{s:'s7_7',a:"when you have time"},{t:" or text me to "},{s:'s7_8',a:"let me know"},{t:" you can come."},
+  ]},
+  {title:'Message 3',parts:[
+    {t:"Hello, "},{s:'s7_9',a:"this is a message"},{t:" for Chris Taylor. It's Sarah from the Dental Centre. I'm "},{s:'s7_10',a:"calling to remind"},{t:" you about your appointment next Wednesday at 10. Please "},{s:'s7_11',a:"call us back"},{t:" on 0208 64514 if you cannot make it. Thank you."},
+  ]},
+];
+const s7State={};
+function buildSec7(){
+  buildWB('sec7-bank',sec7Bank,'s7');
+  const cont=document.getElementById('sec7-container');cont.innerHTML='';
+  let blankNum=0;
+  sec7Messages.forEach(msg=>{
+    const block=document.createElement('div');block.className='msg-block';
+    const ttl=document.createElement('div');ttl.className='msg-title';ttl.textContent=msg.title;block.appendChild(ttl);
+    msg.parts.forEach(part=>{
+      if(part.t!==undefined){block.appendChild(document.createTextNode(part.t));return;}
+      blankNum++;
+      if(blankNum===1){
+        const nm=document.createElement('span');nm.className='q-num';nm.style.fontSize='0.7rem';nm.textContent=blankNum;block.appendChild(nm);
+        const ex=document.createElement('span');ex.className='ex-ans';ex.style.fontSize='0.8rem';ex.textContent=part.a;block.appendChild(ex);
+      } else {
+        const nm=document.createElement('span');nm.className='q-num';nm.style.fontSize='0.7rem';nm.textContent=blankNum;block.appendChild(nm);
+        const slot=mkSlot(part.s,part.a,'s7',s7State);block.appendChild(slot);s7State[part.s]=null;
+      }
+    });
+    cont.appendChild(block);
+  });
+}
+function checkSec7(){let sc=0;Object.entries(s7State).forEach(([k,filled])=>{const slot=document.getElementById('slot-'+k);if(!slot)return;const ok=filled&&filled.toLowerCase()===slot.dataset.answer.toLowerCase();slot.classList.remove('filled');if(ok){slot.classList.add('correct');sc++;}else{slot.classList.add('wrong');slot.textContent=filled?filled+' ✗':'?';}slot.disabled=true;});return sc;}
+function resetSec7(){Object.keys(s7State).forEach(k=>s7State[k]=null);buildSec7();}
+
+// WORD BANK HELPERS
+function buildWB(bankId,words,prefix){const bankEl=document.getElementById(bankId);const lbl=bankEl.querySelector('.wb-label');bankEl.innerHTML='';if(lbl)bankEl.appendChild(lbl);wbSelChips[prefix]=null;words.forEach((word,wi)=>{const chip=document.createElement('button');chip.className='wb-chip';chip.textContent=word;chip.id=prefix+'chip-'+wi;chip.dataset.word=word;chip.dataset.prefix=prefix;chip.addEventListener('click',()=>selectWBChip(chip,prefix));bankEl.appendChild(chip);});}
+function mkSlot(slotId,answer,prefix,stateObj){const slot=document.createElement('button');slot.className='wb-slot';slot.id='slot-'+slotId;slot.dataset.answer=answer;slot.dataset.prefix=prefix;slot.addEventListener('click',()=>fillSlot(slot,prefix,stateObj));return slot;}
+function selectWBChip(chip,prefix){chip.parentElement.querySelectorAll('.wb-chip').forEach(c=>c.style.outline='');wbSelChips[prefix]=(wbSelChips[prefix]===chip)?null:chip;if(wbSelChips[prefix])chip.style.outline='3px solid var(--orange)';}
+function fillSlot(slot,prefix,stateObj){const slotKey=slot.id.replace('slot-','');if(stateObj[slotKey]){const oldWord=stateObj[slotKey];document.querySelectorAll('.wb-chip').forEach(c=>{if(c.dataset.word===oldWord&&c.dataset.prefix===prefix&&c.classList.contains('used'))c.classList.remove('used');});stateObj[slotKey]=null;slot.textContent='';slot.classList.remove('filled');return;}const selChip=wbSelChips[prefix];if(!selChip)return;const word=selChip.dataset.word;slot.textContent=word;slot.classList.add('filled');stateObj[slotKey]=word;selChip.classList.add('used');selChip.style.outline='';wbSelChips[prefix]=null;}
+
+function countUnanswered(){let u=0;sec1Data.forEach(q=>{if(q.given)return;if(!(s1State[q.id]||'').trim())u++;});sec2Data.forEach(q=>{if(q.given)return;if(!(s2State[q.id]||'').trim())u++;});sec3Data.forEach(q=>{if(q.given)return;if(!(s3TickState[q.id]||''))u++;});Object.values(s4State).forEach(v=>{if(!v)u++;});sec5Data.forEach(q=>{if(q.given)return;if(!(s5State[q.id]||'').trim())u++;});sec6Data.forEach(q=>{if(q.given)return;if(!s6State[q.id])u++;});Object.values(s7State).forEach(v=>{if(!v)u++;});return u;}
+function checkAll(){scores.s1=checkSec1();scores.s2=checkSec2();scores.s3=checkSec3();scores.s4=checkSec4();scores.s5=checkSec5();scores.s6=checkSec6();scores.s7=checkSec7();updateLiveBar();}
+function updateLiveBar(){const total=Object.values(scores).reduce((a,b)=>a+b,0);document.getElementById('live-score').textContent=total+'/'+CFG.maxScore;const correct=document.querySelectorAll('.choice-btn.correct,.wb-slot.correct,.ti-input.correct,.dd-select.correct').length;const wrong=document.querySelectorAll('.choice-btn.wrong,.wb-slot.wrong,.ti-input.wrong,.dd-select.wrong').length;document.getElementById('live-correct').textContent=correct;document.getElementById('live-wrong').textContent=wrong;}
+function handleSubmit(){const u=countUnanswered();if(u>0){document.getElementById('unanswered-count').textContent=u;openModal('modal-incomplete');}else confirmSubmit();}
+function confirmSubmit(){closeModal('modal-incomplete');clearInterval(timerInt);checkAll();showResult();}
+function confirmReset(){if(confirm('Reset all answers?'))resetAll();}
+function resetAll(){resetSec1();resetSec2();resetSec3();resetSec4();resetSec5();resetSec6();resetSec7();scores={};updateLiveBar();try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}}
+function showResult(){const total=Object.values(scores).reduce((a,b)=>a+b,0);const pct=Math.round((total/CFG.maxScore)*100),pass=pct>=60;document.getElementById('res-score-num').textContent=total;document.getElementById('res-pct').textContent=pct+'%';document.getElementById('res-pct').style.color=pass?'var(--green)':'var(--red)';const st=document.getElementById('res-status');st.textContent=pass?'PASS ✓':'FAIL ✗';st.className='res-status '+(pass?'pass':'fail');let emoji='💪',msg="Keep studying – you'll improve!";if(pct>=90){emoji='🏆';msg='Outstanding! Excellent work!';}else if(pct>=75){emoji='🎉';msg='Great job! Well done!';}else if(pct>=60){emoji='👏';msg='Good work! Keep practising.';}else if(pct>=40){emoji='📚';msg='Not bad – review the sections marked wrong.';}document.getElementById('res-emoji').textContent=emoji;document.getElementById('res-msg').textContent=msg;document.getElementById('res-stu').innerHTML=`<p>👤 <strong>${student.name}</strong></p><p>👥 ${student.group} &nbsp;·&nbsp; 👨‍🏫 ${student.teacher}</p><p>📝 ${CFG.testName} &nbsp;·&nbsp; ⏱️ ${getTimeTaken()}</p>`;document.getElementById('bd-grid').innerHTML=CFG.sections.map(s=>`<div class="bd-cell"><div class="bdc-s">${scores[s.key]??0}/${s.marks}</div><div class="bdc-n">${s.title}</div></div>`).join('');showPage('page-result');}
+function reviewMistakes(){showPage('page-test');setTimeout(()=>{const fw=document.querySelector('.choice-btn.wrong,.choice-btn.show-correct,.wb-slot.wrong,.ti-input.wrong,.dd-select.wrong');if(fw){try{fw.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){fw.scrollIntoView(false);}}},300);}
+buildSec1();buildSec2();buildSec3();buildSec4();buildSec5();buildSec6();buildSec7();
+</script></body></html>
